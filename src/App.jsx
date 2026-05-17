@@ -50,21 +50,29 @@ function App() {
     setUser(data.user);
     setToken(data.token);
     setWorkspace(data.workspace);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('workspace', JSON.stringify(data.workspace));
+    try {
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('workspace', JSON.stringify(data.workspace));
+    } catch (e) {
+      console.error('Failed to save auth details to localStorage:', e);
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
     setToken(null);
     setWorkspace(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('workspace');
-    localStorage.removeItem('activeTab');
-    localStorage.removeItem('selectedLeadId');
-    localStorage.removeItem('returnTab');
+    try {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('workspace');
+      localStorage.removeItem('activeTab');
+      localStorage.removeItem('selectedLeadId');
+      localStorage.removeItem('returnTab');
+    } catch (e) {
+      console.error('Failed to remove auth details from localStorage:', e);
+    }
   };
 
   // ─── Granular Refresh Functions ─────────────────────────────────────
@@ -201,21 +209,38 @@ function App() {
   }, [token]);
 
   React.useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
+    try {
+      localStorage.setItem('activeTab', activeTab);
+    } catch (e) {
+      console.error('Failed to save activeTab to localStorage:', e);
+    }
   }, [activeTab]);
 
   React.useEffect(() => {
+    if (loading) return; // Do not overwrite or delete persisted values while initial load is in progress!
     if (selectedLead) {
-      localStorage.setItem('selectedLeadId', selectedLead._id);
+      try {
+        localStorage.setItem('selectedLeadId', selectedLead._id);
+      } catch (e) {
+        console.error('Failed to save selectedLeadId to localStorage:', e);
+      }
       setPersistedLeadId(selectedLead._id);
     } else {
-      localStorage.removeItem('selectedLeadId');
+      try {
+        localStorage.removeItem('selectedLeadId');
+      } catch (e) {
+        console.error('Failed to remove selectedLeadId from localStorage:', e);
+      }
       setPersistedLeadId(null);
     }
-  }, [selectedLead]);
+  }, [selectedLead, loading]);
 
   React.useEffect(() => {
-    localStorage.setItem('returnTab', returnTab);
+    try {
+      localStorage.setItem('returnTab', returnTab);
+    } catch (e) {
+      console.error('Failed to save returnTab to localStorage:', e);
+    }
   }, [returnTab]);
 
   const handleLeadAction = async (action, data) => {
@@ -2441,7 +2466,8 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     sampleRecipientName: lead?.sampleRecipientName || '',
     sampleAddress: lead?.sampleAddress || '',
     samplePostcode: lead?.samplePostcode || '',
-    sampleContactNo: lead?.sampleContactNo || ''
+    sampleContactNo: lead?.sampleContactNo || '',
+    status: lead?.status || 'New Lead'
   });
 
   const handleUpdateWorkflow = (updates) => {
@@ -2815,6 +2841,12 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
 
   const currentIndex = statuses.indexOf(lead.status || 'New Lead');
 
+  const isOnVisitOrSampleStage = lead.status === 'Sample / Price Sent' || 
+                                 workflowForm.requiredNextStep === 'Schedule Visit' || 
+                                 workflowForm.requiredNextStep === 'Send Samples' || 
+                                 lead.requiredNextStep === 'Schedule Visit' || 
+                                 lead.requiredNextStep === 'Send Samples';
+
   return (
     <div className="page-content">
       <header className="lead-details-header">
@@ -2975,7 +3007,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className="form-grid-mini">
                 <div className="form-field">
                   <label>Date Contacted</label>
-                  <input type="datetime-local" value={workflowForm.dateContacted} onChange={e => handleUpdateWorkflow({ dateContacted: e.target.value })} />
+                  <CustomDatePicker type="datetime-local" value={workflowForm.dateContacted} onChange={e => handleUpdateWorkflow({ dateContacted: e.target.value })} />
                 </div>
                 <div className="form-field">
                   <label>Method</label>
@@ -3008,6 +3040,44 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               </div>
             )}
 
+            {/* Stage Outcome for Visit or Sample Stage */}
+            {isOnVisitOrSampleStage && (
+              <div className="workflow-section" style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem', marginTop: '1.25rem' }}>
+                <h4>Stage Outcome</h4>
+                <div className="form-grid-mini">
+                  <div className="form-field" style={{ gridColumn: 'span 2' }}>
+                    <label>Mark Stage Outcome</label>
+                    <select
+                      value={workflowForm.status === 'Completed' ? 'Completed' : (workflowForm.status === 'Lost Lead' ? 'Lost' : '')}
+                      onChange={e => {
+                        const val = e.target.value;
+                        if (val === 'Completed') {
+                          handleUpdateWorkflow({ status: 'Completed' });
+                        } else if (val === 'Lost') {
+                          handleUpdateWorkflow({ status: 'Lost Lead' });
+                        } else {
+                          handleUpdateWorkflow({ status: lead.status });
+                        }
+                      }}
+                    >
+                      <option value="">Select Outcome</option>
+                      <option value="Completed">Completed (Won)</option>
+                      <option value="Lost">Lost Lead</option>
+                    </select>
+                  </div>
+                  {workflowForm.status === 'Lost Lead' && (
+                    <div className="form-field" style={{ gridColumn: 'span 2' }}>
+                      <label>Reason for Lost Lead</label>
+                      <select value={workflowForm.lostReason} onChange={e => handleUpdateWorkflow({ lostReason: e.target.value })}>
+                        <option value="">Select Reason</option>
+                        {['Already has supplier', 'Delivery area issue', 'Low demand', 'Competitor gave better deal', 'Price issue', 'Wrong contact details', 'Not selling soft drinks', 'Not interested at the moment', 'Other'].map(r => <option key={r} value={r}>{r}</option>)}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
 
             {currentIndex >= 4 && currentIndex <= 9 && (
               <div className="workflow-section">
@@ -3020,7 +3090,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                   {currentIndex >= 5 && (
                     <div className="form-field">
                       <label>Delivery Date</label>
-                      <input type="date" value={workflowForm.deliveryDate} onChange={e => handleUpdateWorkflow({ deliveryDate: e.target.value })} />
+                      <CustomDatePicker type="date" value={workflowForm.deliveryDate} onChange={e => handleUpdateWorkflow({ deliveryDate: e.target.value })} />
                     </div>
                   )}
                 </div>
@@ -3053,7 +3123,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                   <div className="form-grid-mini">
                     <div className="form-field" style={{ gridColumn: 'span 2' }}>
                       <label>Next Follow Up</label>
-                      <input type="datetime-local" value={workflowForm.nextFollowUpDate} onChange={e => handleUpdateWorkflow({ nextFollowUpDate: e.target.value })} />
+                      <CustomDatePicker type="datetime-local" value={workflowForm.nextFollowUpDate} onChange={e => handleUpdateWorkflow({ nextFollowUpDate: e.target.value })} />
                     </div>
                   </div>
                 )}
@@ -3128,7 +3198,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                         <div className="form-grid-mini">
                           <div className="form-field">
                             <label>Visit Date & Time *</label>
-                            <input
+                            <CustomDatePicker
                               type="datetime-local"
                               value={workflowForm.visitScheduledDate}
                               onChange={e => handleUpdateWorkflow({ visitScheduledDate: e.target.value })}
@@ -3596,6 +3666,250 @@ const SignupPage = ({ onSignup, onSwitchToLogin }) => {
           Already have a workspace? <button className="auth-link" onClick={onSwitchToLogin}>Sign in</button>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Reusable Custom Premium Date & Time Picker Component with OK/Done Button
+const CustomDatePicker = ({ value, onChange, type = 'datetime-local' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = React.useRef(null);
+
+  // Parse initial state or current value safely
+  const parseValue = (val) => {
+    const defaultState = {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth(),
+      day: new Date().getDate(),
+      hour: 12,
+      minute: 0
+    };
+    if (!val) return defaultState;
+    const dateObj = new Date(val);
+    if (isNaN(dateObj.getTime())) {
+      return defaultState;
+    }
+    return {
+      year: dateObj.getFullYear(),
+      month: dateObj.getMonth(),
+      day: dateObj.getDate(),
+      hour: dateObj.getHours(),
+      minute: dateObj.getMinutes()
+    };
+  };
+
+  const parsed = parseValue(value);
+  const [currentYear, setCurrentYear] = useState(parsed.year);
+  const [currentMonth, setCurrentMonth] = useState(parsed.month);
+  const [selectedDay, setSelectedDay] = useState(value ? parsed.day : null);
+  const [selectedHour, setSelectedHour] = useState(parsed.hour);
+  const [selectedMinute, setSelectedMinute] = useState(parsed.minute);
+
+  // Sync internal state if value changes externally
+  React.useEffect(() => {
+    if (value) {
+      const updated = parseValue(value);
+      setCurrentYear(updated.year);
+      setCurrentMonth(updated.month);
+      setSelectedDay(updated.day);
+      setSelectedHour(updated.hour);
+      setSelectedMinute(updated.minute);
+    } else {
+      setSelectedDay(null);
+    }
+  }, [value]);
+
+  // Click outside listener to close the picker
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const handlePrevMonth = (e) => {
+    e.stopPropagation();
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const handleNextMonth = (e) => {
+    e.stopPropagation();
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
+  const handleSelectDay = (day, e) => {
+    e.stopPropagation();
+    setSelectedDay(day);
+  };
+
+  const padZero = (num) => String(num).padStart(2, '0');
+
+  const handleOk = (e) => {
+    e.stopPropagation();
+    const dayVal = selectedDay || new Date().getDate();
+    const finalDate = new Date(currentYear, currentMonth, dayVal, selectedHour, selectedMinute);
+    
+    let formattedVal = '';
+    if (type === 'date') {
+      formattedVal = `${finalDate.getFullYear()}-${padZero(finalDate.getMonth() + 1)}-${padZero(finalDate.getDate())}`;
+    } else {
+      formattedVal = `${finalDate.getFullYear()}-${padZero(finalDate.getMonth() + 1)}-${padZero(finalDate.getDate())}T${padZero(finalDate.getHours())}:${padZero(finalDate.getMinutes())}`;
+    }
+
+    onChange({ target: { value: formattedVal } });
+    setIsOpen(false);
+  };
+
+  const handleToday = (e) => {
+    e.stopPropagation();
+    const today = new Date();
+    setCurrentYear(today.getFullYear());
+    setCurrentMonth(today.getMonth());
+    setSelectedDay(today.getDate());
+    setSelectedHour(today.getHours());
+    setSelectedMinute(today.getMinutes());
+  };
+
+  const handleClear = (e) => {
+    e.stopPropagation();
+    setSelectedDay(null);
+    onChange({ target: { value: '' } });
+    setIsOpen(false);
+  };
+
+  // Format display value for trigger
+  const getDisplayString = () => {
+    if (!value) return '';
+    const dateObj = new Date(value);
+    if (isNaN(dateObj.getTime())) return '';
+    
+    if (type === 'date') {
+      return dateObj.toLocaleDateString(undefined, { dateStyle: 'medium' });
+    } else {
+      return dateObj.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    }
+  };
+
+  // Calendar rendering math
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayIndex = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7; // Monday = 0
+
+  const daysGrid = [];
+  // Empty slots for start of month
+  for (let i = 0; i < firstDayIndex; i++) {
+    daysGrid.push(<div key={`empty-${i}`} className="datepicker-day empty"></div>);
+  }
+  // Days of the month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isSelected = selectedDay === d;
+    const isToday = d === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear();
+    daysGrid.push(
+      <button
+        key={`day-${d}`}
+        type="button"
+        className={`datepicker-day day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
+        onClick={(e) => handleSelectDay(d, e)}
+      >
+        {d}
+      </button>
+    );
+  }
+
+  return (
+    <div className="custom-datepicker-container" ref={containerRef}>
+      <div className="datepicker-trigger" onClick={() => setIsOpen(!isOpen)}>
+        <input
+          type="text"
+          readOnly
+          placeholder={type === 'date' ? 'Select Date' : 'Select Date & Time'}
+          value={getDisplayString()}
+          className="datepicker-trigger-input"
+        />
+        <Calendar size={18} className="datepicker-trigger-icon" />
+      </div>
+
+      {isOpen && (
+        <div className="datepicker-popover" onClick={(e) => e.stopPropagation()}>
+          <div className="datepicker-header">
+            <button type="button" className="datepicker-nav-btn" onClick={handlePrevMonth}>
+              <ChevronLeft size={16} />
+            </button>
+            <span className="datepicker-month-year">{months[currentMonth]} {currentYear}</span>
+            <button type="button" className="datepicker-nav-btn" onClick={handleNextMonth}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          <div className="datepicker-weekdays">
+            {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((wd) => (
+              <div key={wd} className="datepicker-weekday">{wd}</div>
+            ))}
+          </div>
+
+          <div className="datepicker-days">
+            {daysGrid}
+          </div>
+
+          {type === 'datetime-local' && (
+            <div className="datepicker-time-picker">
+              <div className="datepicker-time-label-row">
+                <Clock size={14} />
+                <span>Time Selection</span>
+              </div>
+              <div className="datepicker-time-inputs">
+                <select
+                  value={selectedHour}
+                  onChange={(e) => setSelectedHour(parseInt(e.target.value))}
+                  className="datepicker-time-select"
+                >
+                  {Array.from({ length: 24 }).map((_, h) => (
+                    <option key={h} value={h}>{padZero(h)}</option>
+                  ))}
+                </select>
+                <span className="datepicker-time-separator">:</span>
+                <select
+                  value={selectedMinute}
+                  onChange={(e) => setSelectedMinute(parseInt(e.target.value))}
+                  className="datepicker-time-select"
+                >
+                  {Array.from({ length: 60 }).map((_, m) => (
+                    <option key={m} value={m}>{padZero(m)}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          <div className="datepicker-footer">
+            <div className="datepicker-footer-left">
+              <button type="button" className="datepicker-btn-text" onClick={handleToday}>Today</button>
+              <button type="button" className="datepicker-btn-text clear" onClick={handleClear}>Clear</button>
+            </div>
+            <button type="button" className="datepicker-btn-ok" onClick={handleOk}>
+              <Check size={14} style={{ marginRight: '4px' }} />
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
