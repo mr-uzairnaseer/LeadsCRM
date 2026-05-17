@@ -72,6 +72,16 @@ const leadSchema = new mongoose.Schema({
   customerFeedback: { type: String },
   customerAgreed: { type: String, enum: ['Yes', 'No', 'Pending'] },
   reasonForDecision: { type: String },
+  
+  // Next Step conditional fields
+  visitScheduledDate: { type: Date },
+  otoRef: { type: String },
+  otoOrderId: { type: String },
+  trackingId: { type: String },
+  sampleRecipientName: { type: String },
+  sampleAddress: { type: String },
+  samplePostcode: { type: String },
+  sampleContactNo: { type: String },
 
   // 5. Order & Delivery Fields
   deliveryDate: { type: Date },

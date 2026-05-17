@@ -4,7 +4,7 @@ import {
   Calendar, ChevronRight, LogOut, Bell, User,
   PanelLeft, Search, Moon, BarChart3, RefreshCw, 
   TrendingUp, Phone, ArrowRight, Activity, 
-  Upload, Plus, Filter, MoreHorizontal, Copy, Grid, List, ChevronDown, Check, ChevronLeft, X, FileText, Download, Building,
+  Upload, Plus, Filter, MoreHorizontal, Copy, Grid, List, ChevronDown, Check, ChevronLeft, X, FileText, Download, Building, MapPin,
   MessageSquare, Eye, EyeOff, PlayCircle, Clock, Mail, Edit3, UserX, Key, Trash2
 } from 'lucide-react';
 import './index.css';
@@ -606,7 +606,7 @@ function App() {
       </main>
 
       {/* Modals */}
-      {showAddModal && <AddOpportunityModal onClose={() => setShowAddModal(false)} onSuccess={(newLead) => { if (newLead?._id) upsertLeadInState(newLead); else refreshLeads(); refreshStats(); refreshActivity(); }} authHeaders={authHeaders} users={usersList} />}
+      {showAddModal && <AddOpportunityModal onClose={() => setShowAddModal(false)} onSuccess={(newLead) => { if (newLead?._id) upsertLeadInState(newLead); refreshLeads(); refreshStats(); refreshActivity(); }} authHeaders={authHeaders} users={usersList} />}
       {showImportModal && <ImportLeadsModal onClose={() => setShowImportModal(false)} type={importType} onSuccess={() => { refreshLeads(); refreshStats(); refreshActivity(); if (importType === 'users') refreshUsers(); }} authHeaders={authHeaders} />}
       {showUserModal && <UserModal mode={userModalMode} user={selectedUser} onClose={() => setShowUserModal(false)} onSuccess={(savedUser) => { if (savedUser?._id) upsertUserInState(savedUser); else refreshUsers(); }} authHeaders={authHeaders} currentUser={user} />}
       {showResetPasswordModal && <ResetPasswordModal user={resetTargetUser} onClose={() => setShowResetPasswordModal(false)} authHeaders={authHeaders} />}
@@ -631,7 +631,7 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
     <section className="stats-grid">
       <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
         <div className="stat-header">
-          <span className="stat-label">Total</span>
+          <span className="stat-label">All</span>
           <div className="stat-icon-box"><Target size={16} /></div>
         </div>
         <div className="stat-value">{stats?.totalLeads || 0}</div>
@@ -649,39 +649,23 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
       </div>
       <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
         <div className="stat-header">
-          <span className="stat-label">Hot Leads</span>
-          <div className="stat-icon-box"><Activity size={16} /></div>
+          <span className="stat-label">Contacted</span>
+          <div className="stat-icon-box"><MessageSquare size={16} /></div>
         </div>
-        <div className="stat-value">{stats?.hotLeads || 0}</div>
-        <div className="stat-subtext">Qualified / Interested</div>
+        <div className="stat-value">{stats?.contactedLeads || 0}</div>
+        <div className="stat-subtext">Leads contacted</div>
         <div className="stat-link">View <ArrowRight size={12} /></div>
       </div>
-      <div className="stat-card clickable" onClick={() => onNavigate('Calendar')}>
+      <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
         <div className="stat-header">
-          <span className="stat-label">Follow Ups</span>
-          <div className="stat-icon-box"><Calendar size={16} /></div>
+          <span className="stat-label">Visits</span>
+          <div className="stat-icon-box"><MapPin size={16} /></div>
         </div>
-        <div className="stat-value">{stats?.todayFollowUps || 0}</div>
-        <div className="stat-subtext">Follow-ups due today</div>
+        <div className="stat-value">{stats?.visits || 0}</div>
+        <div className="stat-subtext">Sales visits conducted</div>
         <div className="stat-link">View <ArrowRight size={12} /></div>
       </div>
-      <div className="stat-card clickable">
-        <div className="stat-header">
-          <span className="stat-label">Sales Value</span>
-          <div className="stat-icon-box"><TrendingUp size={16} /></div>
-        </div>
-        <div className="stat-value">£{stats?.monthlySalesValue || 0}</div>
-        <div className="stat-subtext">Monthly total</div>
-      </div>
-      <div className="stat-card clickable">
-        <div className="stat-header">
-          <span className="stat-label">Completed</span>
-          <div className="stat-icon-box"><Check size={16} /></div>
-        </div>
-        <div className="stat-value">{stats?.deliveredOrders || 0}</div>
-        <div className="stat-subtext">Delivered orders</div>
-      </div>
-      <div className="stat-card clickable">
+      <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
         <div className="stat-header">
           <span className="stat-label">Samples</span>
           <div className="stat-icon-box"><Download size={16} /></div>
@@ -689,35 +673,13 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
         <div className="stat-value">{stats?.samplesSent || 0}</div>
         <div className="stat-subtext">Total sent</div>
       </div>
-      <div className="stat-card clickable">
+      <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
         <div className="stat-header">
           <span className="stat-label">Lost</span>
           <div className="stat-icon-box"><X size={16} /></div>
         </div>
         <div className="stat-value">{stats?.lostLeads || 0}</div>
         <div className="stat-subtext">Closed without sale</div>
-      </div>
-    </section>
-
-    <section className="pipeline-section">
-      <div className="pipeline-top">
-        <div className="pipeline-title">Pipeline</div>
-        <div style={{ color: '#9ca3af' }}><BarChart3 size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Lead Journey</div>
-      </div>
-      <div className="pipeline-stepper" style={{ overflowX: 'auto', paddingBottom: '1rem' }}>
-        <div style={{ display: 'flex', minWidth: '1000px', justifyContent: 'space-between' }}>
-          <PipelineStep num={stats?.pipeline?.['New Lead'] || 0} label="New" />
-          <PipelineStep num={stats?.pipeline?.['Contacted'] || 0} label="Contacted" />
-          <PipelineStep num={stats?.pipeline?.['Qualified Lead'] || 0} label="Qualified" />
-          <PipelineStep num={stats?.pipeline?.['Sample / Price Sent'] || 0} label="Samples" />
-          <PipelineStep num={stats?.pipeline?.['Order Confirmed'] || 0} label="Orders" />
-          <PipelineStep num={stats?.pipeline?.['Delivery Scheduled'] || 0} label="Scheduled" />
-          <PipelineStep num={stats?.pipeline?.['Delivered'] || 0} label="Delivered" />
-          <PipelineStep num={stats?.pipeline?.['Payment Pending'] || 0} label="Pending" />
-          <PipelineStep num={stats?.pipeline?.['Payment Received'] || 0} label="Paid" />
-          <PipelineStep num={stats?.pipeline?.['Active Customer / Repeat Order'] || 0} label="Repeat" />
-          <PipelineStep num={stats?.pipeline?.['Lost Lead'] || 0} label="Lost" />
-        </div>
       </div>
     </section>
 
@@ -764,13 +726,13 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
 
 const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLeadClick, users = [], currentUser }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [userFilter, setUserFilter] = useState('All Users');
   const [myItems, setMyItems] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
-  const allStatuses = ['All Status', 'New Lead', 'Contacted', 'Qualified Lead', 'Sample / Price Sent', 'Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending', 'Payment Received', 'Active Customer / Repeat Order', 'Lost Lead'];
+  const allStatuses = ['All', 'New', 'Contacted', 'Visits', 'Samples', 'Lost'];
 
   // Apply all filters
   const filteredLeads = leads.filter(lead => {
@@ -784,7 +746,13 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
       if (!matchesSearch) return false;
     }
     // Status filter
-    if (statusFilter !== 'All Status' && lead.status !== statusFilter) return false;
+    if (statusFilter !== 'All') {
+      if (statusFilter === 'New' && lead.status !== 'New Lead') return false;
+      if (statusFilter === 'Contacted' && lead.status !== 'Contacted') return false;
+      if (statusFilter === 'Visits' && lead.contactMethod !== 'Visit') return false;
+      if (statusFilter === 'Samples' && lead.status !== 'Sample / Price Sent') return false;
+      if (statusFilter === 'Lost' && lead.status !== 'Lost Lead') return false;
+    }
     // User filter
     if (userFilter !== 'All Users') {
       const ownerName = lead.leadOwner?.name || '';
@@ -820,31 +788,30 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
         </div>
       </header>
 
+      <div className="lead-stepper-container" style={{ paddingBottom: '1.5rem', marginBottom: '1rem', marginTop: '1rem' }}>
+        <div className="lead-stepper">
+          <div className="step-line"></div>
+          <div className="step-line-active" style={{ width: `${(allStatuses.indexOf(statusFilter) / (allStatuses.length - 1)) * 100}%` }}></div>
+          {allStatuses.map((s, i) => (
+            <div 
+              key={s} 
+              className={`step-item ${i <= allStatuses.indexOf(statusFilter) ? 'active' : ''} ${s === 'Lost' && statusFilter === 'Lost' ? 'lost' : ''}`}
+              onClick={() => setStatusFilter(s)}
+              style={{ cursor: 'pointer', flex: 1 }}
+            >
+              <div className="step-dot">{i + 1}</div>
+              <span className="step-label">{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="filters-bar">
         <div className="filter-search">
           <Search size={16} color="#94a3b8" />
           <input type="text" placeholder="Search by name, phone, postcode..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {/* Status Filter */}
-          <div className="dropdown-container">
-            <button className="filter-dropdown" onClick={e => { e.stopPropagation(); setShowStatusDropdown(!showStatusDropdown); setShowUserDropdown(false); }}>
-              <Filter size={16} />
-              <span>{statusFilter}</span>
-              <ChevronDown size={14} />
-            </button>
-            {showStatusDropdown && (
-              <div className="custom-dropdown" onClick={e => e.stopPropagation()}>
-                {allStatuses.map(s => (
-                  <div key={s} className={`dropdown-item ${statusFilter === s ? 'active' : ''}`} onClick={() => { setStatusFilter(s); setShowStatusDropdown(false); }}>
-                    {statusFilter === s && <Check size={16} />}
-                    <span style={{ marginLeft: statusFilter === s ? '0' : '26px' }}>{s}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* User Filter */}
           <div className="dropdown-container">
             <button className="filter-dropdown" onClick={e => { e.stopPropagation(); setShowUserDropdown(!showUserDropdown); setShowStatusDropdown(false); }}>
@@ -2454,7 +2421,17 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     customerAgreed: lead?.customerAgreed || '',
     reasonForDecision: lead?.reasonForDecision || '',
     customerFeedback: lead?.customerFeedback || '',
-    deliveryDate: lead?.deliveryDate ? new Date(lead.deliveryDate).toISOString().split('T')[0] : ''
+    deliveryDate: lead?.deliveryDate ? new Date(lead.deliveryDate).toISOString().split('T')[0] : '',
+    
+    // Conditional next steps fields
+    visitScheduledDate: lead?.visitScheduledDate ? new Date(lead.visitScheduledDate).toISOString().slice(0, 16) : '',
+    otoRef: lead?.otoRef || '',
+    otoOrderId: lead?.otoOrderId || '',
+    trackingId: lead?.trackingId || '',
+    sampleRecipientName: lead?.sampleRecipientName || '',
+    sampleAddress: lead?.sampleAddress || '',
+    samplePostcode: lead?.samplePostcode || '',
+    sampleContactNo: lead?.sampleContactNo || ''
   });
 
   const handleUpdateWorkflow = (updates) => {
@@ -2556,7 +2533,12 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
       let nextStatus = currentStatus;
       if (currentIdx < 2) nextStatus = 'Qualified Lead';
       
-      if (workflowForm.priceListSent === 'Yes' || workflowForm.sampleDelivered === 'Yes') {
+      if (
+        workflowForm.priceListSent === 'Yes' || 
+        workflowForm.sampleDelivered === 'Yes' ||
+        workflowForm.requiredNextStep === 'Send Price List' ||
+        workflowForm.requiredNextStep === 'Send Samples'
+      ) {
         if (currentIdx < 3) nextStatus = 'Sample / Price Sent';
       }
       
@@ -2579,7 +2561,15 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
         'companyProfileSent',
         'customerAgreed',
         'reasonForDecision',
-        'customerFeedback'
+        'customerFeedback',
+        'visitScheduledDate',
+        'otoRef',
+        'otoOrderId',
+        'trackingId',
+        'sampleRecipientName',
+        'sampleAddress',
+        'samplePostcode',
+        'sampleContactNo'
       ];
       fields.forEach(field => {
         if (workflowForm[field] !== undefined && workflowForm[field] !== null && workflowForm[field] !== '') {
@@ -2605,6 +2595,36 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     if (popupMode === 'Not Interested' && !workflowForm.lostReason) {
       setPopupError('Please select a reason for not interested.');
       return;
+    }
+
+    if (popupMode === 'Interested') {
+      if (workflowForm.requiredNextStep === 'Schedule Visit') {
+        if (!workflowForm.visitScheduledDate) {
+          setPopupError('Please select a visit date and time.');
+          return;
+        }
+      } else if (workflowForm.requiredNextStep === 'Send Samples') {
+        if (!workflowForm.otoRef || !workflowForm.otoRef.trim()) {
+          setPopupError('Please enter OTO Ref.');
+          return;
+        }
+        if (!workflowForm.otoOrderId || !workflowForm.otoOrderId.trim()) {
+          setPopupError('Please enter OTO Order ID.');
+          return;
+        }
+        if (!workflowForm.sampleRecipientName || !workflowForm.sampleRecipientName.trim()) {
+          setPopupError('Please enter Recipient Name.');
+          return;
+        }
+        if (!workflowForm.sampleAddress || !workflowForm.sampleAddress.trim()) {
+          setPopupError('Please enter Shipping Address.');
+          return;
+        }
+        if (!workflowForm.samplePostcode || !workflowForm.samplePostcode.trim()) {
+          setPopupError('Please enter Postal Code.');
+          return;
+        }
+      }
     }
 
     const shouldClose = () => {
@@ -2797,24 +2817,6 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
           <button className="trash-btn" onClick={handleDelete} title="Delete Lead"><Trash2 size={20} /></button>
         </div>
       </header>
-
-      <div className="lead-stepper-container" style={{ overflowX: 'auto', paddingBottom: '1.5rem', marginBottom: '1rem' }}>
-        <div className="lead-stepper" style={{ minWidth: '1200px' }}>
-          <div className="step-line"></div>
-          <div className="step-line-active" style={{ width: `${(currentIndex / (statuses.length - 1)) * 100}%` }}></div>
-          {statuses.map((s, i) => (
-            <div 
-              key={s} 
-              className={`step-item ${i <= currentIndex ? 'active' : ''} ${lead.status === 'Lost Lead' && i === 10 ? 'lost' : ''}`}
-              onClick={() => handleUpdateStatus(s)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="step-dot">{i + 1}</div>
-              <span className="step-label">{s}</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       <div className="lead-grid-cols">
         <div className="details-column">
@@ -3091,94 +3093,104 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                           </>
                         )}
                         <div className="form-field">
-                          <label>Decision Maker Role</label>
-                          <select value={workflowForm.decisionMaker} onChange={e => handleUpdateWorkflow({ decisionMaker: e.target.value })}>
-                            <option value="">Select</option>
-                            {['POC', 'Owner', 'Manager', 'Buyer', 'Other'].map(d => <option key={d} value={d}>{d}</option>)}
-                          </select>
-                        </div>
-                        <div className="form-field">
                           <label>Usual Quantity</label>
                           <input type="text" value={workflowForm.usualOrderQuantity} placeholder="e.g. 50 cases/month" onChange={e => handleUpdateWorkflow({ usualOrderQuantity: e.target.value })} />
-                        </div>
-                        <div className="form-field">
-                          <label>Needs Sample/Pricing?</label>
-                          <select value={workflowForm.needsSamplePricing} onChange={e => handleUpdateWorkflow({ needsSamplePricing: e.target.value })}>
-                            <option value="">Select Needs</option>
-                            {['Sample', 'Price List', 'Both'].map(n => <option key={n} value={n}>{n}</option>)}
-                          </select>
                         </div>
                         <div className="form-field">
                           <label>Next Step</label>
                           <select value={workflowForm.requiredNextStep} onChange={e => handleUpdateWorkflow({ requiredNextStep: e.target.value })}>
                             <option value="">Select Next Step</option>
-                            {['Send Price List', 'Send Samples', 'Send Catalogue', 'Schedule Visit', 'Send Company Profile', 'Create Order'].map(n => <option key={n} value={n}>{n}</option>)}
+                            {['Send Price List', 'Send Samples', 'Schedule Visit'].map(n => <option key={n} value={n}>{n}</option>)}
                           </select>
                         </div>
                       </div>
                     </div>
-                    <div className="workflow-section">
-                      <h4>Sample / Pricing Feedback</h4>
-                      <div className="form-grid-mini">
-                        <div className="form-field">
-                          <label>Price List Sent</label>
-                          <select value={workflowForm.priceListSent} onChange={e => handleUpdateWorkflow({ priceListSent: e.target.value })}>
-                            <option value="">Select</option>
-                            {['Yes', 'No'].map(a => <option key={a} value={a}>{a}</option>)}
-                          </select>
-                        </div>
-                        <div className="form-field">
-                          <label>Sample Delivered</label>
-                          <select value={workflowForm.sampleDelivered} onChange={e => handleUpdateWorkflow({ sampleDelivered: e.target.value })}>
-                            <option value="">Select</option>
-                            {['Yes', 'No'].map(a => <option key={a} value={a}>{a}</option>)}
-                          </select>
-                        </div>
-                        {workflowForm.sampleDelivered === 'Yes' && (
+                    {workflowForm.requiredNextStep === 'Schedule Visit' && (
+                      <div className="workflow-section">
+                        <h4>Schedule Visit Details</h4>
+                        <div className="form-grid-mini">
                           <div className="form-field">
-                            <label>Sample Delivery Date</label>
-                            <input type="date" value={workflowForm.sampleDeliveryDate} onChange={e => handleUpdateWorkflow({ sampleDeliveryDate: e.target.value })} />
+                            <label>Visit Date & Time *</label>
+                            <input 
+                              type="datetime-local" 
+                              value={workflowForm.visitScheduledDate} 
+                              onChange={e => handleUpdateWorkflow({ visitScheduledDate: e.target.value })} 
+                            />
                           </div>
-                        )}
-                        <div className="form-field">
-                          <label>Catalogue Sent</label>
-                          <select value={workflowForm.catalogueSent} onChange={e => handleUpdateWorkflow({ catalogueSent: e.target.value })}>
-                            <option value="">Select</option>
-                            {['Yes', 'No'].map(a => <option key={a} value={a}>{a}</option>)}
-                          </select>
-                        </div>
-                        <div className="form-field">
-                          <label>Customer Agreed?</label>
-                          <select value={workflowForm.customerAgreed} onChange={e => handleUpdateWorkflow({ customerAgreed: e.target.value })}>
-                            <option value="">Select</option>
-                            {['Yes', 'No', 'Pending'].map(a => <option key={a} value={a}>{a}</option>)}
-                          </select>
-                        </div>
-                        {workflowForm.customerAgreed === 'Pending' && (
-                          <div className="form-field">
-                            <label>Next Follow Up</label>
-                            <input type="datetime-local" value={workflowForm.nextFollowUpDate} onChange={e => handleUpdateWorkflow({ nextFollowUpDate: e.target.value })} />
-                          </div>
-                        )}
-                        {workflowForm.customerAgreed === 'No' && (
-                          <div className="form-field">
-                            <label>Reason for "No"</label>
-                            <select value={workflowForm.reasonForDecision} onChange={e => handleUpdateWorkflow({ reasonForDecision: e.target.value })}>
-                              <option value="">Select Reason</option>
-                              {['Price too high', 'Customer did not like product', 'Already buying competitor brand', 'Wants more time', 'Low demand', 'Delivery issue', 'MOQ issue', 'Payment terms issue', 'Other'].map(r => <option key={r} value={r}>{r}</option>)}
-                            </select>
-                          </div>
-                        )}
-                        <div className="form-field" style={{ gridColumn: 'span 2' }}>
-                          <label>Customer Feedback Notes</label>
-                          <textarea 
-                            style={{ width: '100%', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', minHeight: '60px' }}
-                            value={workflowForm.customerFeedback}
-                            onChange={e => handleUpdateWorkflow({ customerFeedback: e.target.value })}
-                          />
                         </div>
                       </div>
-                    </div>
+                    )}
+
+                    {workflowForm.requiredNextStep === 'Send Samples' && (
+                      <div className="workflow-section">
+                        <h4>Sample Shipping Details</h4>
+                        <div className="form-grid-mini">
+                          <div className="form-field">
+                            <label>OTO Ref *</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.otoRef} 
+                              placeholder="OTO Reference Number" 
+                              onChange={e => handleUpdateWorkflow({ otoRef: e.target.value })} 
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label>OTO Order ID *</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.otoOrderId} 
+                              placeholder="OTO Order ID" 
+                              onChange={e => handleUpdateWorkflow({ otoOrderId: e.target.value })} 
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label>Tracking ID</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.trackingId} 
+                              placeholder="Courier Tracking ID (optional)" 
+                              onChange={e => handleUpdateWorkflow({ trackingId: e.target.value })} 
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label>Name *</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.sampleRecipientName} 
+                              placeholder="Recipient Name" 
+                              onChange={e => handleUpdateWorkflow({ sampleRecipientName: e.target.value })} 
+                            />
+                          </div>
+                          <div className="form-field" style={{ gridColumn: 'span 2' }}>
+                            <label>Address *</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.sampleAddress} 
+                              placeholder="Full Shipping Address" 
+                              onChange={e => handleUpdateWorkflow({ sampleAddress: e.target.value })} 
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label>Postal Code *</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.samplePostcode} 
+                              placeholder="e.g. SE1 7PB" 
+                              onChange={e => handleUpdateWorkflow({ samplePostcode: e.target.value })} 
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label>Contact No</label>
+                            <input 
+                              type="text" 
+                              value={workflowForm.sampleContactNo} 
+                              placeholder="Contact Phone Number" 
+                              onChange={e => handleUpdateWorkflow({ sampleContactNo: e.target.value })} 
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

@@ -539,7 +539,7 @@ app.get('/api/stats', auth, async (req, res) => {
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
     // Run all queries in parallel
-    const [leadStats, todayFollowUps, samplesSent, monthlySalesResult] = await Promise.all([
+    const [leadStats, todayFollowUps, samplesSent, monthlySalesResult, visitsCount] = await Promise.all([
       Lead.aggregate([
         { $match: { workspace: workspaceId } },
         { $group: { _id: "$status", count: { $sum: 1 } } }
@@ -552,7 +552,8 @@ app.get('/api/stats', auth, async (req, res) => {
             createdAt: { $gte: monthStart }
         }},
         { $group: { _id: null, total: { $sum: "$totalOrderValue" } } }
-      ])
+      ]),
+      Lead.countDocuments({ workspace: req.workspaceId, contactMethod: 'Visit' })
     ]);
 
     const pipeline = {
@@ -572,16 +573,12 @@ app.get('/api/stats', auth, async (req, res) => {
       totalLeads += stat.count;
     });
 
-    const monthlySales = monthlySalesResult[0]?.total || 0;
-
     res.send({
       totalLeads,
       newLeads: pipeline['New Lead'],
-      hotLeads: pipeline['Qualified Lead'] + pipeline['Sample / Price Sent'],
-      todayFollowUps,
+      contactedLeads: pipeline['Contacted'],
+      visits: visitsCount,
       samplesSent,
-      deliveredOrders: pipeline['Delivered'],
-      monthlySalesValue: monthlySales,
       lostLeads: pipeline['Lost Lead'],
       pipeline
     });

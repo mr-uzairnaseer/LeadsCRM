@@ -6,11 +6,12 @@ const connectDB = async () => {
   // Already connected
   if (mongoose.connections[0].readyState === 1) return;
   
-  // Connection is in progress — wait for it
+  // Connection is in progress — wait for it to complete
   if (isConnecting) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    while (isConnecting) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
     if (mongoose.connections[0].readyState === 1) return;
-    throw new Error('MongoDB connection in progress, try again');
   }
   
   isConnecting = true;
@@ -21,7 +22,6 @@ const connectDB = async () => {
     console.log('MongoDB Connected');
   } catch (err) {
     console.error('MongoDB Connection Error:', err.message);
-    // Don't process.exit — let the middleware return 503 so server stays alive
     throw err;
   } finally {
     isConnecting = false;

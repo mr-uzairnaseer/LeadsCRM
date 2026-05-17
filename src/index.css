@@ -2129,7 +2129,7 @@
 }
 
 /* Dashboard Components */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
 .stat-card { 
   background: var(--card-bg); /* Depth Foundation */
   padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); 
