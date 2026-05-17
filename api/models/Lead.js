@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const leadSchema = new mongoose.Schema({
   // 1. New Lead Fields
   companyName: { type: String, required: true },
-  businessType: { 
-    type: String, 
+  businessType: {
+    type: String,
     required: true,
     enum: [
-      'Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor', 
-      'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer', 
+      'Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor',
+      'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer',
       'Hotel', 'Catering Company', 'Gym / Sports Club', 'Other'
     ]
   },
@@ -21,14 +21,14 @@ const leadSchema = new mongoose.Schema({
   leadOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   notes: { type: String },
   leadSource: { type: String },
-  status: { 
-    type: String, 
+  status: {
+    type: String,
     enum: [
-      'New Lead', 'Contacted', 'Qualified Lead', 'Sample / Price Sent', 
-      'Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending', 
+      'New Lead', 'Contacted', 'Qualified Lead', 'Sample / Price Sent',
+      'Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending',
       'Payment Received', 'Active Customer / Repeat Order', 'Lost Lead'
     ],
-    default: 'New Lead' 
+    default: 'New Lead'
   },
 
   // 2. CONTACTED Stage Fields
@@ -47,17 +47,17 @@ const leadSchema = new mongoose.Schema({
   decisionMakerName: { type: String },
   decisionMakerContactNumber: { type: String },
   needsSamplePricing: { type: String, enum: ['Sample', 'Price List', 'Both'] },
-  requiredNextStep: { 
-    type: String, 
-    enum: ['Send Price List', 'Send Samples', 'Send Catalogue', 'Schedule Visit', 'Send Company Profile', 'Create Order'] 
+  requiredNextStep: {
+    type: String,
+    enum: ['Send distributor details', 'Send Samples', 'Send Catalogue', 'Schedule Visit', 'Send Company Profile', 'Create Order']
   },
 
   // 2.C Not Interested / Lost Lead Fields
-  lostReason: { 
-    type: String, 
+  lostReason: {
+    type: String,
     enum: [
-      'Already has supplier', 'Delivery area issue', 'Low demand', 
-      'Competitor gave better deal', 'Price issue', 'Wrong contact details', 
+      'Already has supplier', 'Delivery area issue', 'Low demand',
+      'Competitor gave better deal', 'Price issue', 'Wrong contact details',
       'Not selling soft drinks', 'Not interested at the moment', 'Other'
     ]
   },
@@ -72,7 +72,7 @@ const leadSchema = new mongoose.Schema({
   customerFeedback: { type: String },
   customerAgreed: { type: String, enum: ['Yes', 'No', 'Pending'] },
   reasonForDecision: { type: String },
-  
+
   // Next Step conditional fields
   visitScheduledDate: { type: Date },
   otoRef: { type: String },
@@ -91,7 +91,7 @@ const leadSchema = new mongoose.Schema({
   workspace: { type: mongoose.Schema.Types.ObjectId, ref: 'Workspace', required: true }
 });
 
-leadSchema.pre('save', function(next) {
+leadSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });

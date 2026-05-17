@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Users, LayoutDashboard, Target, Building2, UserCircle, 
+import {
+  Users, LayoutDashboard, Target, Building2, UserCircle,
   Calendar, ChevronRight, LogOut, Bell, User,
-  PanelLeft, Search, Moon, BarChart3, RefreshCw, 
-  TrendingUp, Phone, ArrowRight, Activity, 
+  PanelLeft, Search, Moon, BarChart3, RefreshCw,
+  TrendingUp, Phone, ArrowRight, Activity,
   Upload, Plus, Filter, MoreHorizontal, Copy, Grid, List, ChevronDown, Check, ChevronLeft, X, FileText, Download, Building, MapPin,
   MessageSquare, Eye, EyeOff, PlayCircle, Clock, Mail, Edit3, UserX, Key, Trash2
 } from 'lucide-react';
@@ -128,23 +128,23 @@ function App() {
         fetch('/api/activity', { headers: authHeaders }),
         fetch('/api/stats', { headers: authHeaders })
       ]);
-      
+
       const [leadsData, usersData, activityData, statsData] = await Promise.all([
         leadsRes.json(), usersRes.json(), activityRes.json(), statsRes.json()
       ]);
-      
+
       setLeads(Array.isArray(leadsData) ? leadsData : []);
       setUsersList(Array.isArray(usersData) ? usersData : []);
       setActivityList(Array.isArray(activityData) ? activityData : []);
       setDashboardStats(statsData);
-      
+
       // Sync selectedLead if currently viewing one
       const currentLeadId = selectedLead?._id || persistedLeadId;
       if (currentLeadId) {
         const updatedLead = (Array.isArray(leadsData) ? leadsData : []).find(l => l._id === currentLeadId);
         if (updatedLead) setSelectedLead(updatedLead);
       }
-      
+
       setLoading(false);
     } catch (e) {
       console.error('Error fetching data:', e);
@@ -312,7 +312,7 @@ function App() {
   };
 
   if (!token) {
-    return authMode === 'login' 
+    return authMode === 'login'
       ? <LoginPage onLogin={handleLogin} onSwitchToSignup={() => setAuthMode('signup')} />
       : <SignupPage onSignup={handleLogin} onSwitchToLogin={() => setAuthMode('login')} />;
   }
@@ -328,7 +328,7 @@ function App() {
         <div className="sidebar-scrollable">
           <div className="nav-section-label">Navigation</div>
           <nav className="nav-menu">
-            <div 
+            <div
               className={`nav-item ${activeTab === 'Dashboard' ? 'active' : ''}`}
               onClick={() => setActiveTab('Dashboard')}
             >
@@ -336,7 +336,7 @@ function App() {
               <span>Dashboard</span>
               {activeTab === 'Dashboard' && <ChevronRight size={14} className="nav-item-arrow" />}
             </div>
-            <div 
+            <div
               className={`nav-item ${activeTab === 'Opportunities' ? 'active' : ''}`}
               onClick={() => setActiveTab('Opportunities')}
             >
@@ -344,7 +344,7 @@ function App() {
               <span>Opportunities</span>
               {activeTab === 'Opportunities' && <ChevronRight size={14} className="nav-item-arrow" />}
             </div>
-            <div 
+            <div
               className={`nav-item ${activeTab === 'Accounts' ? 'active' : ''}`}
               onClick={() => setActiveTab('Accounts')}
             >
@@ -352,7 +352,7 @@ function App() {
               <span>Accounts</span>
               {activeTab === 'Accounts' && <ChevronRight size={14} className="nav-item-arrow" />}
             </div>
-            <div 
+            <div
               className={`nav-item ${activeTab === 'Contact' ? 'active' : ''}`}
               onClick={() => setActiveTab('Contact')}
             >
@@ -360,7 +360,7 @@ function App() {
               <span>Contact</span>
               {activeTab === 'Contact' && <ChevronRight size={14} className="nav-item-arrow" />}
             </div>
-            <div 
+            <div
               className={`nav-item ${activeTab === 'Calendar' ? 'active' : ''}`}
               onClick={() => setActiveTab('Calendar')}
             >
@@ -374,7 +374,7 @@ function App() {
             <>
               <div className="nav-section-label">Management</div>
               <nav className="nav-menu">
-                <div 
+                <div
                   className={`nav-item ${activeTab === 'Users' ? 'active' : ''}`}
                   onClick={() => setActiveTab('Users')}
                 >
@@ -417,7 +417,7 @@ function App() {
               <div className="user-email">{user?.email}</div>
             </div>
           </div>
-          
+
           <div className="logout-btn" onClick={handleLogout}>
             <LogOut size={18} />
             <span>Log out</span>
@@ -428,8 +428,8 @@ function App() {
       {/* Main Wrapper */}
       <main className="main-wrapper">
         <header className="top-nav">
-          <button 
-            className="sidebar-toggle-btn" 
+          <button
+            className="sidebar-toggle-btn"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <PanelLeft size={18} />
@@ -440,7 +440,7 @@ function App() {
             <div className="kb-hint">⌘ K</div>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', position: 'relative' }}>
-            <button 
+            <button
               className={`nav-action-btn ${showNotifications ? 'active' : ''}`}
               onClick={() => setShowNotifications(!showNotifications)}
             >
@@ -450,8 +450,8 @@ function App() {
             {showNotifications && (
               <>
                 <div className="popup-overlay-transparent" onClick={() => setShowNotifications(false)}></div>
-                <NotificationsPopup 
-                  onClose={() => setShowNotifications(false)} 
+                <NotificationsPopup
+                  onClose={() => setShowNotifications(false)}
                   onNavigate={() => setActiveTab('Notifications')}
                   activity={activityList}
                   onMarkAllRead={handleMarkAllRead}
@@ -468,11 +468,11 @@ function App() {
         ) : (
           <>
             {activeTab === 'Dashboard' && (
-              <DashboardView 
-                stats={dashboardStats} 
+              <DashboardView
+                stats={dashboardStats}
                 leads={leads}
                 activityList={activityList}
-                onNavigate={setActiveTab} 
+                onNavigate={setActiveTab}
                 onLeadClick={(lead) => {
                   setReturnTab('Dashboard');
                   setSelectedLead(lead);
@@ -481,10 +481,10 @@ function App() {
               />
             )}
             {activeTab === 'LeadDetails' && (
-              <LeadDetailsView 
+              <LeadDetailsView
                 key={selectedLead?._id}
-                lead={selectedLead} 
-                onBack={() => setActiveTab(returnTab)} 
+                lead={selectedLead}
+                onBack={() => setActiveTab(returnTab)}
                 onSuccess={async (updatedLeadFromApi) => {
                   // If the PATCH/POST already returned the updated lead, use it directly
                   if (updatedLeadFromApi?._id) {
@@ -532,10 +532,10 @@ function App() {
               />
             )}
             {activeTab === 'Opportunities' && (
-              <OpportunitiesView 
+              <OpportunitiesView
                 leads={leads}
-                onAdd={() => setShowAddModal(true)} 
-                onImport={() => { setImportType('leads'); setShowImportModal(true); }} 
+                onAdd={() => setShowAddModal(true)}
+                onImport={() => { setImportType('leads'); setShowImportModal(true); }}
                 viewMode={opportunitiesViewMode}
                 setViewMode={setOpportunitiesViewMode}
                 users={usersList}
@@ -548,9 +548,9 @@ function App() {
               />
             )}
             {activeTab === 'Accounts' && (
-              <AccountsView 
+              <AccountsView
                 leads={leads.filter(l => ['Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending', 'Payment Received', 'Active Customer / Repeat Order'].includes(l.status))}
-                onImport={() => { setImportType('accounts'); setShowImportModal(true); }} 
+                onImport={() => { setImportType('accounts'); setShowImportModal(true); }}
                 viewMode={accountsViewMode}
                 setViewMode={setAccountsViewMode}
                 onLeadClick={(lead) => {
@@ -561,25 +561,25 @@ function App() {
               />
             )}
             {activeTab === 'Contact' && (
-              <ContactView 
-                leads={leads} 
+              <ContactView
+                leads={leads}
                 onLeadClick={(lead) => {
                   setReturnTab('Contact');
                   setSelectedLead(lead);
                   setActiveTab('LeadDetails');
-                }} 
+                }}
               />
             )}
             {activeTab === 'Calendar' && <CalendarView leads={leads.filter(l => l.status !== 'Lost Lead')} />}
             {activeTab === 'Users' && (user?.role === 'BDM' || user?.role === 'Admin' || user?.isOwner) && (
-              <UsersView 
+              <UsersView
                 users={usersList}
-                onImport={() => { setImportType('users'); setShowImportModal(true); }} 
+                onImport={() => { setImportType('users'); setShowImportModal(true); }}
                 onAdd={() => {
                   setUserModalMode('add');
                   setSelectedUser(null);
                   setShowUserModal(true);
-                }} 
+                }}
                 onEdit={(user) => {
                   setUserModalMode('edit');
                   setSelectedUser(user);
@@ -595,9 +595,9 @@ function App() {
               />
             )}
             {activeTab === 'Notifications' && (
-              <NotificationsView 
-                activity={activityList} 
-                onMarkAllRead={handleMarkAllRead} 
+              <NotificationsView
+                activity={activityList}
+                onMarkAllRead={handleMarkAllRead}
                 onDelete={handleDeleteActivity}
               />
             )}
@@ -610,7 +610,7 @@ function App() {
       {showImportModal && <ImportLeadsModal onClose={() => setShowImportModal(false)} type={importType} onSuccess={() => { refreshLeads(); refreshStats(); refreshActivity(); if (importType === 'users') refreshUsers(); }} authHeaders={authHeaders} />}
       {showUserModal && <UserModal mode={userModalMode} user={selectedUser} onClose={() => setShowUserModal(false)} onSuccess={(savedUser) => { if (savedUser?._id) upsertUserInState(savedUser); else refreshUsers(); }} authHeaders={authHeaders} currentUser={user} />}
       {showResetPasswordModal && <ResetPasswordModal user={resetTargetUser} onClose={() => setShowResetPasswordModal(false)} authHeaders={authHeaders} />}
-      
+
       {/* Search Popup */}
       {showSearchPopup && <SearchPopup onClose={() => setShowSearchPopup(false)} leads={leads} users={usersList} onLeadClick={(lead) => {
         setSelectedLead(lead);
@@ -700,12 +700,12 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
         </div>
         <div className="opportunity-list-clean">
           {leads.slice(0, 5).map(lead => (
-            <OpportunityItem 
+            <OpportunityItem
               key={lead._id}
-              name={lead.companyName} 
-              contact={lead.contactPerson} 
+              name={lead.companyName}
+              contact={lead.contactPerson}
               status={lead.status}
-              onClick={() => onLeadClick(lead)} 
+              onClick={() => onLeadClick(lead)}
             />
           ))}
           {leads.length === 0 && <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>No recent opportunities</p>}
@@ -719,11 +719,11 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
         </div>
         <div className="activity-list">
           {activityList.slice(0, 5).map(act => (
-            <ActivityItem 
-              key={act._id} 
-              user={act.user} 
-              text={act.text} 
-              time={new Date(act.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} 
+            <ActivityItem
+              key={act._id}
+              user={act.user}
+              text={act.text}
+              time={new Date(act.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
             />
           ))}
           {activityList.length === 0 && <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>No recent activity</p>}
@@ -803,8 +803,8 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
           <div className="step-line"></div>
           <div className="step-line-active" style={{ width: `${(allStatuses.indexOf(statusFilter) / (allStatuses.length - 1)) * 100}%` }}></div>
           {allStatuses.map((s, i) => (
-            <div 
-              key={s} 
+            <div
+              key={s}
               className={`step-item ${i <= allStatuses.indexOf(statusFilter) ? 'active' : ''} ${s === 'Lost' && statusFilter === 'Lost' ? 'lost' : ''}`}
               onClick={() => setStatusFilter(s)}
               style={{ cursor: 'pointer', flex: 1 }}
@@ -874,17 +874,17 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
             </thead>
             <tbody>
               {filteredLeads.map(opp => (
-                <TableRow 
+                <TableRow
                   key={opp._id}
-                  business={opp.companyName} 
-                  contact={opp.contactPerson} 
-                  phone={opp.phoneWhatsApp} 
-                  postcode={opp.postcode || '—'} 
+                  business={opp.companyName}
+                  contact={opp.contactPerson}
+                  phone={opp.phoneWhatsApp}
+                  postcode={opp.postcode || '—'}
                   status={opp.status}
-                  bda={opp.leadOwner?.name || '—'} 
-                  bdm={['BDM', 'Admin'].includes(opp.leadOwner?.role) ? opp.leadOwner.name : '—'} 
-                  callback={opp.nextFollowUpDate ? new Date(opp.nextFollowUpDate).toLocaleDateString() : '—'} 
-                  provider={opp.topCompetitorBrandName || '—'} 
+                  bda={opp.leadOwner?.name || '—'}
+                  bdm={['BDM', 'Admin'].includes(opp.leadOwner?.role) ? opp.leadOwner.name : '—'}
+                  callback={opp.nextFollowUpDate ? new Date(opp.nextFollowUpDate).toLocaleDateString() : '—'}
+                  provider={opp.topCompetitorBrandName || '—'}
                   onClick={() => onLeadClick(opp)}
                 />
               ))}
@@ -895,9 +895,9 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
       ) : (
         <div className="opportunities-grid-container">
           {filteredLeads.map(opp => (
-            <div 
-              key={opp._id} 
-              className="opportunity-grid-card" 
+            <div
+              key={opp._id}
+              className="opportunity-grid-card"
               onClick={() => onLeadClick(opp)}
               style={{ cursor: 'pointer' }}
             >
@@ -968,8 +968,8 @@ const AccountsView = ({ leads, onImport, viewMode, setViewMode, onLeadClick }) =
 
         <div className="tab-toggle">
           {['All', 'Orders', 'Delivery', 'Payment', 'Repeat'].map(tab => (
-            <button 
-              key={tab} 
+            <button
+              key={tab}
               className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
@@ -977,7 +977,7 @@ const AccountsView = ({ leads, onImport, viewMode, setViewMode, onLeadClick }) =
             </button>
           ))}
         </div>
-        
+
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <div className="dropdown-container">
             <button className="filter-dropdown" onClick={() => setShowUserDropdown(!showUserDropdown)}>
@@ -1024,13 +1024,13 @@ const AccountsView = ({ leads, onImport, viewMode, setViewMode, onLeadClick }) =
               </thead>
               <tbody>
                 {filteredLeads.map(acc => (
-                  <AccountRow 
+                  <AccountRow
                     key={acc._id}
-                    business={acc.companyName} 
-                    contact={acc.contactPerson} 
-                    phone={acc.phoneWhatsApp} 
-                    postcode={acc.postcode} 
-                    status={acc.status} 
+                    business={acc.companyName}
+                    contact={acc.contactPerson}
+                    phone={acc.phoneWhatsApp}
+                    postcode={acc.postcode}
+                    status={acc.status}
                     onClick={() => onLeadClick(acc)}
                   />
                 ))}
@@ -1095,9 +1095,9 @@ const ContactView = ({ leads, onLeadClick }) => {
       <div className="filters-bar">
         <div className="filter-search">
           <Search size={16} color="#94a3b8" />
-          <input 
-            type="text" 
-            placeholder="Search contacts..." 
+          <input
+            type="text"
+            placeholder="Search contacts..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -1105,8 +1105,8 @@ const ContactView = ({ leads, onLeadClick }) => {
 
         <div className="tab-toggle">
           {['All', 'Opportunities', 'Accounts'].map(tab => (
-            <button 
-              key={tab} 
+            <button
+              key={tab}
               className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
@@ -1118,13 +1118,13 @@ const ContactView = ({ leads, onLeadClick }) => {
 
       <div className="contact-list">
         {filteredContacts.map(l => (
-          <ContactCard 
+          <ContactCard
             key={l._id}
-            initial={l.contactPerson ? l.contactPerson[0] : '?'} 
-            name={l.contactPerson || 'Unknown Contact'} 
-            business={l.companyName} 
-            phone={l.phoneWhatsApp} 
-            type={accountStatuses.includes(l.status) ? 'Account' : 'Opportunity'} 
+            initial={l.contactPerson ? l.contactPerson[0] : '?'}
+            name={l.contactPerson || 'Unknown Contact'}
+            business={l.companyName}
+            phone={l.phoneWhatsApp}
+            type={accountStatuses.includes(l.status) ? 'Account' : 'Opportunity'}
             onClick={() => onLeadClick(l)}
           />
         ))}
@@ -1199,19 +1199,19 @@ const CalendarView = ({ leads }) => {
       .map(l => getCallbackDate(l))
       .filter(Boolean)
       .sort((a, b) => a - b);
-    
+
     if (callbackDates.length === 0) return new Date();
-    
+
     // Check if any callbacks exist in current month
-    const hasCurrentMonth = callbackDates.some(d => 
+    const hasCurrentMonth = callbackDates.some(d =>
       d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth()
     );
     if (hasCurrentMonth) return new Date();
-    
+
     // Find nearest future callback
     const futureCallbacks = callbackDates.filter(d => d >= today);
     if (futureCallbacks.length > 0) return futureCallbacks[0];
-    
+
     // Fallback: nearest past callback
     return callbackDates[callbackDates.length - 1];
   };
@@ -1261,8 +1261,8 @@ const CalendarView = ({ leads }) => {
           <button className="btn-secondary" style={{ padding: '0 1rem', height: '38px' }} onClick={goToToday}>Today</button>
           <div className="tab-toggle">
             {['Month', 'Day', 'List'].map(mode => (
-              <button 
-                key={mode} 
+              <button
+                key={mode}
                 className={`tab-btn ${calendarMode === mode ? 'active' : ''}`}
                 onClick={() => setCalendarMode(mode)}
               >
@@ -1286,13 +1286,13 @@ const UsersView = ({ users, onImport, onAdd, onEdit, onResetPassword, onDeactiva
 
   const roles = ['All Roles', 'Agent', 'Manager'];
 
-  const filteredUsers = roleFilter === 'All Roles' 
-    ? users 
+  const filteredUsers = roleFilter === 'All Roles'
+    ? users
     : users.filter(u => {
-        if (roleFilter === 'Agent') return u.role === 'BDA';
-        if (roleFilter === 'Manager') return u.role === 'BDM' || u.role === 'Admin';
-        return false;
-      });
+      if (roleFilter === 'Agent') return u.role === 'BDA';
+      if (roleFilter === 'Manager') return u.role === 'BDM' || u.role === 'Admin';
+      return false;
+    });
 
   return (
     <div className="page-content">
@@ -1321,8 +1321,8 @@ const UsersView = ({ users, onImport, onAdd, onEdit, onResetPassword, onDeactiva
           {showRoleDropdown && (
             <div className="custom-dropdown">
               {roles.map(role => (
-                <div 
-                  key={role} 
+                <div
+                  key={role}
                   className={`dropdown-item ${roleFilter === role ? 'active' : ''}`}
                   onClick={() => {
                     setRoleFilter(role);
@@ -1340,7 +1340,7 @@ const UsersView = ({ users, onImport, onAdd, onEdit, onResetPassword, onDeactiva
 
       <div className="users-grid">
         {filteredUsers.map(u => (
-          <UserCard 
+          <UserCard
             key={u._id}
             user={u}
             initials={u.name.split(' ').map(n => n[0]).join('').toUpperCase()}
@@ -1380,9 +1380,9 @@ const UserCard = ({ user, initials, name, handle, email, phone, role, status, on
     </div>
     <div className="user-card-footer">
       <button className="user-action-btn" title="Edit User" onClick={() => onEdit(user)}><Edit3 size={16} /></button>
-      <button 
-        className={`user-action-btn ${status === 'inactive' ? 'active' : ''}`} 
-        title={status === 'inactive' ? 'Activate User' : 'Deactivate User'} 
+      <button
+        className={`user-action-btn ${status === 'inactive' ? 'active' : ''}`}
+        title={status === 'inactive' ? 'Activate User' : 'Deactivate User'}
         onClick={() => onDeactivate(user)}
       >
         <UserX size={16} />
@@ -1502,13 +1502,13 @@ const CalendarListView = ({ leads }) => {
 
       <div className="appointment-list">
         {leadsWithCallbacks.map(l => (
-          <AppointmentCard 
+          <AppointmentCard
             key={l._id}
-            name={getLeadName(l)} 
-            type="Callback" 
-            contact={getLeadContact(l)} 
-            bdm={l.bdm} 
-            time={formatCallbackDate(l)} 
+            name={getLeadName(l)}
+            type="Callback"
+            contact={getLeadContact(l)}
+            bdm={l.bdm}
+            time={formatCallbackDate(l)}
           />
         ))}
         {leadsWithCallbacks.length === 0 && <p style={{ color: '#9ca3af' }}>No scheduled callbacks or appointments.</p>}
@@ -1601,8 +1601,8 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
   const assignableUsers = users.filter(u => u.role === 'BDA' || u.role === 'BDM');
 
   const businessTypes = [
-    'Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor', 
-    'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer', 
+    'Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor',
+    'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer',
     'Hotel', 'Catering Company', 'Gym / Sports Club', 'Other'
   ];
 
@@ -1615,11 +1615,11 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
     if (!formData.companyName.trim()) newErrors.companyName = true;
     if (!formData.businessType) newErrors.businessType = true;
     if (!formData.cityArea.trim()) newErrors.cityArea = true;
-    
+
     // Phone validation (at least 10 characters)
-    const phoneRegex = /^\+?[\d\s-]{10,}$/; 
+    const phoneRegex = /^\+?[\d\s-]{10,}$/;
     if (!formData.phoneWhatsApp.trim() || !phoneRegex.test(formData.phoneWhatsApp)) newErrors.phoneWhatsApp = true;
-    
+
     // Email validation (optional but must be valid if provided)
     if (formData.email.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1651,7 +1651,7 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
       } else {
         const errorText = await res.text();
         let errorMessage = 'Failed to create lead. Please try again.';
-        
+
         if (errorText.includes('Duplicate lead found')) {
           errorMessage = 'A lead with this Company Name or Phone number already exists.';
         } else {
@@ -1690,11 +1690,11 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
         </div>
         <div className="modal-body-scrollable">
           {generalError && (
-            <div style={{ 
-              background: '#fef2f2', 
-              color: '#dc2626', 
-              padding: '0.75rem', 
-              borderRadius: '0.5rem', 
+            <div style={{
+              background: '#fef2f2',
+              color: '#dc2626',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
               marginBottom: '1.25rem',
               fontSize: '0.875rem',
               border: '1px solid #fee2e2'
@@ -1705,18 +1705,18 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
           <div className="form-grid">
             <div className={`form-field ${errors.companyName ? 'error' : ''}`}>
               <label>Company / Shop Name *</label>
-              <input 
-                type="text" 
-                value={formData.companyName} 
-                onChange={e => setFormData({...formData, companyName: e.target.value})} 
+              <input
+                type="text"
+                value={formData.companyName}
+                onChange={e => setFormData({ ...formData, companyName: e.target.value })}
               />
             </div>
             <div className={`form-field ${errors.businessType ? 'error' : ''}`}>
               <label>Business Type *</label>
-              <select 
+              <select
                 className="form-select"
-                value={formData.businessType} 
-                onChange={e => setFormData({...formData, businessType: e.target.value})}
+                value={formData.businessType}
+                onChange={e => setFormData({ ...formData, businessType: e.target.value })}
               >
                 <option value="">Select Type</option>
                 {businessTypes.map(t => <option key={t} value={t}>{t}</option>)}
@@ -1724,46 +1724,46 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
             </div>
             <div className="form-field">
               <label>Contact Name</label>
-              <input type="text" value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} />
+              <input type="text" value={formData.contactPerson} onChange={e => setFormData({ ...formData, contactPerson: e.target.value })} />
             </div>
             <div className={`form-field ${errors.phoneWhatsApp ? 'error' : ''}`}>
               <label>Phone / WhatsApp *</label>
-              <input 
-                type="text" 
-                value={formData.phoneWhatsApp} 
-                onChange={e => setFormData({...formData, phoneWhatsApp: e.target.value})} 
+              <input
+                type="text"
+                value={formData.phoneWhatsApp}
+                onChange={e => setFormData({ ...formData, phoneWhatsApp: e.target.value })}
               />
             </div>
             <div className={`form-field ${errors.email ? 'error' : ''}`}>
               <label>Email</label>
-              <input 
-                type="email" 
-                value={formData.email} 
-                onChange={e => setFormData({...formData, email: e.target.value})} 
+              <input
+                type="email"
+                value={formData.email}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
             <div className={`form-field ${errors.cityArea ? 'error' : ''}`}>
               <label>City / Area *</label>
-              <input 
-                type="text" 
-                value={formData.cityArea} 
-                onChange={e => setFormData({...formData, cityArea: e.target.value})} 
+              <input
+                type="text"
+                value={formData.cityArea}
+                onChange={e => setFormData({ ...formData, cityArea: e.target.value })}
               />
             </div>
             <div className={`form-field ${errors.postcode ? 'error' : ''}`}>
               <label>Postcode *</label>
-              <input 
-                type="text" 
-                value={formData.postcode} 
-                onChange={e => setFormData({...formData, postcode: e.target.value})} 
+              <input
+                type="text"
+                value={formData.postcode}
+                onChange={e => setFormData({ ...formData, postcode: e.target.value })}
               />
             </div>
             <div className="form-field">
               <label>Assign to BDA</label>
-              <select 
+              <select
                 className="form-select"
-                value={formData.leadOwner} 
-                onChange={e => setFormData({...formData, leadOwner: e.target.value})}
+                value={formData.leadOwner}
+                onChange={e => setFormData({ ...formData, leadOwner: e.target.value })}
               >
                 <option value="">Current User (Default)</option>
                 {assignableUsers.map(u => (
@@ -1775,8 +1775,8 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
               <label>Interested Products</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
                 {products.map(p => (
-                  <button 
-                    key={p} 
+                  <button
+                    key={p}
                     className={`btn-secondary ${formData.interestedProducts.includes(p) ? 'active' : ''}`}
                     onClick={() => toggleProduct(p)}
                     style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem', background: formData.interestedProducts.includes(p) ? '#dcfce7' : '' }}
@@ -1788,14 +1788,14 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
             </div>
             <div className="form-field">
               <label>Lead Source</label>
-              <select className="form-select" value={formData.leadSource} onChange={e => setFormData({...formData, leadSource: e.target.value})}>
+              <select className="form-select" value={formData.leadSource} onChange={e => setFormData({ ...formData, leadSource: e.target.value })}>
                 <option value="">Select Source</option>
                 {leadSources.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="form-field full-width">
               <label>Notes</label>
-              <textarea rows="4" placeholder="Additional details..." value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})}></textarea>
+              <textarea rows="4" placeholder="Additional details..." value={formData.notes} onChange={e => setFormData({ ...formData, notes: e.target.value })}></textarea>
             </div>
           </div>
         </div>
@@ -1813,7 +1813,7 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
 const SearchPopup = ({ leads, users, onLeadClick, onClose }) => {
   const [query, setQuery] = useState('');
 
-  const leadsResults = leads.filter(l => 
+  const leadsResults = leads.filter(l =>
     (l.companyName && l.companyName.toLowerCase().includes(query.toLowerCase())) ||
     (l.contactPerson && l.contactPerson.toLowerCase().includes(query.toLowerCase())) ||
     (l.postcode && l.postcode.toLowerCase().includes(query.toLowerCase()))
@@ -1826,7 +1826,7 @@ const SearchPopup = ({ leads, users, onLeadClick, onClose }) => {
     original: l
   }));
 
-  const usersResults = users.filter(u => 
+  const usersResults = users.filter(u =>
     u.name.toLowerCase().includes(query.toLowerCase()) ||
     u.email.toLowerCase().includes(query.toLowerCase())
   ).map(u => ({
@@ -1845,9 +1845,9 @@ const SearchPopup = ({ leads, users, onLeadClick, onClose }) => {
       <div className="search-popup-card" onClick={e => e.stopPropagation()}>
         <div className="search-popup-header">
           <Search size={20} className="search-icon" />
-          <input 
-            type="text" 
-            placeholder="Search opportunities, accounts, users..." 
+          <input
+            type="text"
+            placeholder="Search opportunities, accounts, users..."
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -1915,15 +1915,15 @@ const UserModal = ({ mode, user, onClose, onSuccess, authHeaders, currentUser })
     if (!formData.name.trim()) newErrors.name = true;
     if (!formData.handle.trim()) newErrors.handle = true;
     if (mode === 'add' && (!formData.password || formData.password.length < 8)) newErrors.password = true;
-    
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim() || !emailRegex.test(formData.email)) newErrors.email = true;
-    
+
     // Phone validation (at least 10 characters)
-    const phoneRegex = /^\+?[\d\s-]{10,}$/; 
+    const phoneRegex = /^\+?[\d\s-]{10,}$/;
     if (!formData.phone.trim() || !phoneRegex.test(formData.phone)) newErrors.phone = true;
-    
+
     if (!formData.role) newErrors.role = true;
 
     setErrors(newErrors);
@@ -1951,7 +1951,7 @@ const UserModal = ({ mode, user, onClose, onSuccess, authHeaders, currentUser })
       } else {
         const errorText = await res.text();
         let errorMessage = 'Failed to save user. Please try again.';
-        
+
         if (errorText.includes('E11000') && errorText.includes('email')) {
           errorMessage = 'A user with this email address already exists.';
         } else if (errorText.includes('E11000')) {
@@ -1983,12 +1983,12 @@ const UserModal = ({ mode, user, onClose, onSuccess, authHeaders, currentUser })
         </div>
         <div className="modal-body">
           {generalError && (
-            <div style={{ 
-              background: '#fef2f2', 
-              color: '#dc2626', 
-              padding: '0.75rem', 
-              borderRadius: '8px', 
-              fontSize: '0.8125rem', 
+            <div style={{
+              background: '#fef2f2',
+              color: '#dc2626',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              fontSize: '0.8125rem',
               fontWeight: 600,
               marginBottom: '1.25rem',
               border: '1px solid #fee2e2'
@@ -1999,24 +1999,24 @@ const UserModal = ({ mode, user, onClose, onSuccess, authHeaders, currentUser })
           <div className="form-grid">
             <div className={`form-field ${errors.name ? 'error' : ''}`}>
               <label>Full Name *</label>
-              <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. John Doe" />
+              <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. John Doe" />
             </div>
             <div className={`form-field ${errors.handle ? 'error' : ''}`}>
               <label>Username / Handle *</label>
-              <input type="text" value={formData.handle} onChange={e => setFormData({...formData, handle: e.target.value})} placeholder="@username" />
+              <input type="text" value={formData.handle} onChange={e => setFormData({ ...formData, handle: e.target.value })} placeholder="@username" />
             </div>
             {mode === 'add' && (
               <div className={`form-field ${errors.password ? 'error' : ''}`}>
                 <label>Password * (min. 8 chars)</label>
                 <div className="password-input-wrapper">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    value={formData.password} 
-                    onChange={e => setFormData({...formData, password: e.target.value})} 
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={e => setFormData({ ...formData, password: e.target.value })}
                   />
-                  <button 
-                    type="button" 
-                    className="eye-button" 
+                  <button
+                    type="button"
+                    className="eye-button"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -2026,18 +2026,18 @@ const UserModal = ({ mode, user, onClose, onSuccess, authHeaders, currentUser })
             )}
             <div className={`form-field ${errors.role ? 'error' : ''}`}>
               <label>Role *</label>
-              <select className="form-select" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+              <select className="form-select" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })}>
                 <option value="BDA">BDA (Agent)</option>
                 {currentUser?.isOwner && <option value="BDM">BDM (Manager)</option>}
               </select>
             </div>
             <div className={`form-field ${errors.email ? 'error' : ''}`}>
               <label>Email *</label>
-              <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+              <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
             </div>
             <div className={`form-field ${errors.phone ? 'error' : ''}`}>
               <label>Phone *</label>
-              <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+              <input type="text" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
             </div>
           </div>
         </div>
@@ -2088,20 +2088,20 @@ const ResetPasswordModal = ({ user, onClose, authHeaders }) => {
           <p style={{ color: '#64748b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
             Setting a new password for <span style={{ color: '#1e293b', fontWeight: 700 }}>{user?.name}</span>.
           </p>
-          
+
           <div className="form-field">
             <label style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>New Password</label>
             <div style={{ position: 'relative' }}>
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                placeholder="Min. 6 characters" 
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Min. 6 characters"
                 style={{ paddingRight: '4rem' }}
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
               />
-              <button 
+              <button
                 type="button"
-                className="show-password-btn" 
+                className="show-password-btn"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
@@ -2114,11 +2114,11 @@ const ResetPasswordModal = ({ user, onClose, authHeaders }) => {
             </div>
           </div>
           {success && (
-            <div style={{ 
-              marginTop: '1rem', 
-              padding: '0.75rem', 
-              background: '#dcfce7', 
-              color: '#15803d', 
+            <div style={{
+              marginTop: '1rem',
+              padding: '0.75rem',
+              background: '#dcfce7',
+              color: '#15803d',
               borderRadius: '8px',
               fontSize: '0.875rem',
               fontWeight: 600,
@@ -2134,9 +2134,9 @@ const ResetPasswordModal = ({ user, onClose, authHeaders }) => {
         </div>
         <div className="modal-footer" style={{ borderTop: 'none', gap: '1rem', padding: '0 1.5rem 1.5rem' }}>
           <button className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }} onClick={onClose}>Cancel</button>
-          <button 
-            className="btn-primary" 
-            style={{ flex: 1, justifyContent: 'center', background: '#60a5fa' }} 
+          <button
+            className="btn-primary"
+            style={{ flex: 1, justifyContent: 'center', background: '#60a5fa' }}
             onClick={handleReset}
             disabled={resetting}
           >
@@ -2161,15 +2161,15 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
   const currentTemplate = templates[type] || templates.leads;
 
   const businessTypeEnum = [
-    'Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor', 
-    'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer', 
+    'Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor',
+    'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer',
     'Hotel', 'Catering Company', 'Gym / Sports Club', 'Other'
   ];
 
   const mapIndustryToBusinessType = (industry) => {
     if (!industry) return 'Other';
-    const found = businessTypeEnum.find(b => 
-      b.toLowerCase().includes(industry.toLowerCase()) || 
+    const found = businessTypeEnum.find(b =>
+      b.toLowerCase().includes(industry.toLowerCase()) ||
       industry.toLowerCase().includes(b.toLowerCase())
     );
     return found || 'Other';
@@ -2205,7 +2205,7 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
             }
           }
           values.push(current.trim());
-          
+
           const obj = {};
           headers.forEach((header, i) => {
             let val = values[i] || '';
@@ -2262,7 +2262,7 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
             console.error('Failed to import row:', payload.companyName, errData.error || res.statusText);
           }
         }
-        
+
         await fetch('/api/activity', {
           method: 'POST',
           headers: authHeaders,
@@ -2297,10 +2297,10 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
         </div>
         <div className="modal-body">
           <div className="import-dropzone" style={{ position: 'relative' }}>
-            <input 
-              type="file" 
-              accept=".csv" 
-              onChange={(e) => setFile(e.target.files[0])} 
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setFile(e.target.files[0])}
               style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
             />
             <Upload size={32} color={file ? "#10b981" : "#2563eb"} />
@@ -2327,9 +2327,9 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
         </div>
         <div className="modal-footer">
           <button className="btn-secondary" onClick={onClose}>Cancel</button>
-          <button 
-            className="btn-primary" 
-            onClick={handleImport} 
+          <button
+            className="btn-primary"
+            onClick={handleImport}
             disabled={!file || importing}
           >
             {importing ? "Importing..." : "Start Import"}
@@ -2383,8 +2383,8 @@ const OpportunityItem = ({ name, contact, status, onClick }) => (
 
 const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpportunities, authHeaders, users = [], activityList = [] }) => {
   const statuses = [
-    'New Lead', 'Contacted', 'Qualified Lead', 'Sample / Price Sent', 
-    'Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending', 
+    'New Lead', 'Contacted', 'Qualified Lead', 'Sample / Price Sent',
+    'Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending',
     'Payment Received', 'Active Customer / Repeat Order', 'Completed', 'Lost Lead'
   ];
 
@@ -2432,7 +2432,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     reasonForDecision: lead?.reasonForDecision || '',
     customerFeedback: lead?.customerFeedback || '',
     deliveryDate: lead?.deliveryDate ? new Date(lead.deliveryDate).toISOString().split('T')[0] : '',
-    
+
     // Conditional next steps fields
     visitScheduledDate: lead?.visitScheduledDate ? new Date(lead.visitScheduledDate).toISOString().slice(0, 16) : '',
     otoRef: lead?.otoRef || '',
@@ -2468,11 +2468,11 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     setPopupMode('');
   };
 
-  const saveWorkflowState = async ({ payload = null, afterSave = () => {} } = {}) => {
+  const saveWorkflowState = async ({ payload = null, afterSave = () => { } } = {}) => {
     setUpdating(true);
     try {
       let bodyPayload = payload || { ...workflowForm };
-      
+
       // Auto-determine status if saving the whole form or if not already in payload
       if (!bodyPayload.status) {
         const currentStatus = lead.status || 'New Lead';
@@ -2485,18 +2485,18 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
           nextStatus = 'Lost Lead';
         } else if (workflowForm.response === 'Interested') {
           if (currentIdx < 2) nextStatus = 'Qualified Lead';
-          if (workflowForm.requiredNextStep === 'Send Price List') {
+          if (workflowForm.requiredNextStep === 'Send distributor details') {
             nextStatus = 'Completed';
           } else if (
-            (workflowForm.priceListSent === 'Yes' || 
-             workflowForm.sampleDelivered === 'Yes' || 
-             workflowForm.requiredNextStep === 'Send Samples') && 
+            (workflowForm.priceListSent === 'Yes' ||
+              workflowForm.sampleDelivered === 'Yes' ||
+              workflowForm.requiredNextStep === 'Send Samples') &&
             currentIdx < 3
           ) {
             nextStatus = 'Sample / Price Sent';
           }
         }
-        
+
         if (nextStatus !== currentStatus) {
           bodyPayload.status = nextStatus;
         }
@@ -2527,7 +2527,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
   };
 
   const buildPopupPatch = () => {
-    const patch = { 
+    const patch = {
       response: workflowForm.response,
       dateContacted: workflowForm.dateContacted,
       contactMethod: workflowForm.contactMethod
@@ -2549,16 +2549,16 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     if (popupMode === 'Interested') {
       let nextStatus = currentStatus;
       if (currentIdx < 2) nextStatus = 'Qualified Lead';
-      
+
       if (
-        workflowForm.priceListSent === 'Yes' || 
+        workflowForm.priceListSent === 'Yes' ||
         workflowForm.sampleDelivered === 'Yes' ||
-        workflowForm.requiredNextStep === 'Send Price List' ||
+        workflowForm.requiredNextStep === 'Send distributor details' ||
         workflowForm.requiredNextStep === 'Send Samples'
       ) {
         if (currentIdx < 3) nextStatus = 'Sample / Price Sent';
       }
-      
+
       if (nextStatus !== currentStatus) patch.status = nextStatus;
 
       const fields = [
@@ -2710,11 +2710,11 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     if (!contactForm.companyName.trim()) newErrors.companyName = true;
     if (!contactForm.businessType) newErrors.businessType = true;
     if (!contactForm.cityArea.trim()) newErrors.cityArea = true;
-    
+
     // Phone validation (at least 10 characters)
-    const phoneRegex = /^\+?[\d\s-]{10,}$/; 
+    const phoneRegex = /^\+?[\d\s-]{10,}$/;
     if (!contactForm.phoneWhatsApp.trim() || !phoneRegex.test(contactForm.phoneWhatsApp)) newErrors.phoneWhatsApp = true;
-    
+
     // Email validation (optional)
     if (contactForm.email.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -2747,7 +2747,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
   const handleDelete = async () => {
     if (!window.confirm(`Are you sure you want to delete ${lead.companyName}?`)) return;
     try {
-      const res = await fetch(`/api/leads/${lead._id}`, { 
+      const res = await fetch(`/api/leads/${lead._id}`, {
         method: 'DELETE',
         headers: authHeaders
       });
@@ -2860,11 +2860,11 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className={`contact-info-item ${contactErrors.companyName ? 'error' : ''}`}>
                 <Building size={18} />
                 {isEditingContact ? (
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className={contactErrors.companyName ? 'error' : ''}
-                    value={contactForm.companyName} 
-                    onChange={e => setContactForm({...contactForm, companyName: e.target.value})} 
+                    value={contactForm.companyName}
+                    onChange={e => setContactForm({ ...contactForm, companyName: e.target.value })}
                   />
                 ) : (
                   <span>{lead.companyName}</span>
@@ -2873,10 +2873,10 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className={`contact-info-item ${contactErrors.businessType ? 'error' : ''}`}>
                 <Target size={18} />
                 {isEditingContact ? (
-                  <select 
+                  <select
                     className={`form-select ${contactErrors.businessType ? 'error' : ''}`}
-                    value={contactForm.businessType} 
-                    onChange={e => setContactForm({...contactForm, businessType: e.target.value})}
+                    value={contactForm.businessType}
+                    onChange={e => setContactForm({ ...contactForm, businessType: e.target.value })}
                   >
                     {['Retail Shop', 'Cash & Carry', 'Wholesaler', 'Distributor', 'Restaurant / Café', 'Supermarket', 'Online Store', 'Event Buyer', 'Hotel', 'Catering Company', 'Gym / Sports Club', 'Other'].map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
@@ -2887,7 +2887,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className="contact-info-item">
                 <User size={18} />
                 {isEditingContact ? (
-                  <input type="text" value={contactForm.contactPerson} onChange={e => setContactForm({...contactForm, contactPerson: e.target.value})} />
+                  <input type="text" value={contactForm.contactPerson} onChange={e => setContactForm({ ...contactForm, contactPerson: e.target.value })} />
                 ) : (
                   <span>{lead.contactPerson || 'No contact person'}</span>
                 )}
@@ -2895,11 +2895,11 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className={`contact-info-item ${contactErrors.phoneWhatsApp ? 'error' : ''}`}>
                 <Phone size={18} />
                 {isEditingContact ? (
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className={contactErrors.phoneWhatsApp ? 'error' : ''}
-                    value={contactForm.phoneWhatsApp} 
-                    onChange={e => setContactForm({...contactForm, phoneWhatsApp: e.target.value})} 
+                    value={contactForm.phoneWhatsApp}
+                    onChange={e => setContactForm({ ...contactForm, phoneWhatsApp: e.target.value })}
                   />
                 ) : (
                   <span>{lead.phoneWhatsApp}</span>
@@ -2908,11 +2908,11 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className={`contact-info-item ${contactErrors.email ? 'error' : ''}`}>
                 <Mail size={18} />
                 {isEditingContact ? (
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     className={contactErrors.email ? 'error' : ''}
-                    value={contactForm.email} 
-                    onChange={e => setContactForm({...contactForm, email: e.target.value})} 
+                    value={contactForm.email}
+                    onChange={e => setContactForm({ ...contactForm, email: e.target.value })}
                   />
                 ) : (
                   <span>{lead.email || 'No email'}</span>
@@ -2922,19 +2922,19 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                 <Building2 size={18} />
                 {isEditingContact ? (
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       className={contactErrors.cityArea ? 'error' : ''}
-                      placeholder="City" 
-                      value={contactForm.cityArea} 
-                      onChange={e => setContactForm({...contactForm, cityArea: e.target.value})} 
+                      placeholder="City"
+                      value={contactForm.cityArea}
+                      onChange={e => setContactForm({ ...contactForm, cityArea: e.target.value })}
                     />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       className={contactErrors.postcode ? 'error' : ''}
-                      placeholder="Postcode" 
-                      value={contactForm.postcode} 
-                      onChange={e => setContactForm({...contactForm, postcode: e.target.value})} 
+                      placeholder="Postcode"
+                      value={contactForm.postcode}
+                      onChange={e => setContactForm({ ...contactForm, postcode: e.target.value })}
                     />
                   </div>
                 ) : (
@@ -2944,10 +2944,10 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
               <div className="contact-info-item">
                 <UserCircle size={18} />
                 {isEditingContact ? (
-                  <select 
+                  <select
                     className="form-select"
-                    value={contactForm.leadOwner} 
-                    onChange={e => setContactForm({...contactForm, leadOwner: e.target.value})}
+                    value={contactForm.leadOwner}
+                    onChange={e => setContactForm({ ...contactForm, leadOwner: e.target.value })}
                   >
                     <option value="">Current User (Default)</option>
                     {assignableUsers.map(u => (
@@ -2968,7 +2968,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                 Workflow Stages
               </h3>
             </div>
-            
+
             {/* Stage: Contacted */}
             <div className="workflow-section">
               <h4>1. Contact Information</h4>
@@ -3026,11 +3026,11 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                 </div>
               </div>
             )}
-            
+
             <div style={{ marginTop: '1rem', padding: '1rem', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
-              <button 
-                className="btn-primary" 
-                onClick={saveWorkflowState} 
+              <button
+                className="btn-primary"
+                onClick={saveWorkflowState}
                 disabled={updating}
                 style={{ padding: '0.75rem 1.5rem', fontWeight: 600 }}
               >
@@ -3117,7 +3117,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                           <label>Next Step</label>
                           <select value={workflowForm.requiredNextStep} onChange={e => handleUpdateWorkflow({ requiredNextStep: e.target.value })}>
                             <option value="">Select Next Step</option>
-                            {['Send Price List', 'Send Samples', 'Schedule Visit'].map(n => <option key={n} value={n}>{n}</option>)}
+                            {['Send distributor details', 'Send Samples', 'Schedule Visit'].map(n => <option key={n} value={n}>{n}</option>)}
                           </select>
                         </div>
                       </div>
@@ -3128,10 +3128,10 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                         <div className="form-grid-mini">
                           <div className="form-field">
                             <label>Visit Date & Time *</label>
-                            <input 
-                              type="datetime-local" 
-                              value={workflowForm.visitScheduledDate} 
-                              onChange={e => handleUpdateWorkflow({ visitScheduledDate: e.target.value })} 
+                            <input
+                              type="datetime-local"
+                              value={workflowForm.visitScheduledDate}
+                              onChange={e => handleUpdateWorkflow({ visitScheduledDate: e.target.value })}
                             />
                           </div>
                         </div>
@@ -3144,65 +3144,65 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                         <div className="form-grid-mini">
                           <div className="form-field">
                             <label>OTO Ref *</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.otoRef} 
-                              placeholder="OTO Reference Number" 
-                              onChange={e => handleUpdateWorkflow({ otoRef: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.otoRef}
+                              placeholder="OTO Reference Number"
+                              onChange={e => handleUpdateWorkflow({ otoRef: e.target.value })}
                             />
                           </div>
                           <div className="form-field">
                             <label>OTO Order ID *</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.otoOrderId} 
-                              placeholder="OTO Order ID" 
-                              onChange={e => handleUpdateWorkflow({ otoOrderId: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.otoOrderId}
+                              placeholder="OTO Order ID"
+                              onChange={e => handleUpdateWorkflow({ otoOrderId: e.target.value })}
                             />
                           </div>
                           <div className="form-field">
                             <label>Tracking ID</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.trackingId} 
-                              placeholder="Courier Tracking ID (optional)" 
-                              onChange={e => handleUpdateWorkflow({ trackingId: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.trackingId}
+                              placeholder="Courier Tracking ID (optional)"
+                              onChange={e => handleUpdateWorkflow({ trackingId: e.target.value })}
                             />
                           </div>
                           <div className="form-field">
                             <label>Name *</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.sampleRecipientName} 
-                              placeholder="Recipient Name" 
-                              onChange={e => handleUpdateWorkflow({ sampleRecipientName: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.sampleRecipientName}
+                              placeholder="Recipient Name"
+                              onChange={e => handleUpdateWorkflow({ sampleRecipientName: e.target.value })}
                             />
                           </div>
                           <div className="form-field" style={{ gridColumn: 'span 2' }}>
                             <label>Address *</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.sampleAddress} 
-                              placeholder="Full Shipping Address" 
-                              onChange={e => handleUpdateWorkflow({ sampleAddress: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.sampleAddress}
+                              placeholder="Full Shipping Address"
+                              onChange={e => handleUpdateWorkflow({ sampleAddress: e.target.value })}
                             />
                           </div>
                           <div className="form-field">
                             <label>Postal Code *</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.samplePostcode} 
-                              placeholder="e.g. SE1 7PB" 
-                              onChange={e => handleUpdateWorkflow({ samplePostcode: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.samplePostcode}
+                              placeholder="e.g. SE1 7PB"
+                              onChange={e => handleUpdateWorkflow({ samplePostcode: e.target.value })}
                             />
                           </div>
                           <div className="form-field">
                             <label>Contact No</label>
-                            <input 
-                              type="text" 
-                              value={workflowForm.sampleContactNo} 
-                              placeholder="Contact Phone Number" 
-                              onChange={e => handleUpdateWorkflow({ sampleContactNo: e.target.value })} 
+                            <input
+                              type="text"
+                              value={workflowForm.sampleContactNo}
+                              placeholder="Contact Phone Number"
+                              onChange={e => handleUpdateWorkflow({ sampleContactNo: e.target.value })}
                             />
                           </div>
                         </div>
@@ -3220,14 +3220,110 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
         )}
 
         <div className="actions-column">
+          <div className="details-card">
+            <div className="card-title-row" style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.95rem', fontWeight: 700 }}>
+                <FileText size={18} color="#2563eb" />
+                Qualification & Next Step Details
+              </h3>
+            </div>
+            
+            <div className="qualification-table-container">
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
+                <tbody>
+                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600, width: '45%' }}>Sells Competitors?</td>
+                    <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.sellsCompetitorBrands || '—'}</td>
+                  </tr>
+                  {lead.sellsCompetitorBrands === 'Yes' && (
+                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Competitor Brand</td>
+                      <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.topCompetitorBrandName || '—'}</td>
+                    </tr>
+                  )}
+                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Decision Maker?</td>
+                    <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.isCurrentContactDecisionMaker || '—'}</td>
+                  </tr>
+                  {lead.isCurrentContactDecisionMaker === 'No' && (
+                    <>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Decision Maker Name</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.decisionMakerName || '—'}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Decision Maker Phone</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.decisionMakerContactNumber || '—'}</td>
+                      </tr>
+                    </>
+                  )}
+                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Usual Order Quantity</td>
+                    <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.usualOrderQuantity || '—'}</td>
+                  </tr>
+                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Required Next Step</td>
+                    <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>
+                      {lead.requiredNextStep ? (
+                        <span className="status-badge-completed" style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>
+                          {lead.requiredNextStep}
+                        </span>
+                      ) : '—'}
+                    </td>
+                  </tr>
+                  {lead.requiredNextStep === 'Schedule Visit' && (
+                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Visit Date & Time</td>
+                      <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>
+                        {lead.visitScheduledDate ? new Date(lead.visitScheduledDate).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' }) : '—'}
+                      </td>
+                    </tr>
+                  )}
+                  {lead.requiredNextStep === 'Send Samples' && (
+                    <>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>OTO Ref</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.otoRef || '—'}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>OTO Order ID</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.otoOrderId || '—'}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Tracking ID</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.trackingId || '—'}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Recipient Name</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.sampleRecipientName || '—'}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Shipping Address</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700, wordBreak: 'break-word' }}>{lead.sampleAddress || '—'}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Postal Code</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.samplePostcode || '—'}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '8px 0', color: '#64748b', fontWeight: 600 }}>Contact No</td>
+                        <td style={{ padding: '8px 0', color: '#1e293b', fontWeight: 700 }}>{lead.sampleContactNo || '—'}</td>
+                      </tr>
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div className="activity-history-card" style={{ marginTop: '1.5rem' }}>
             <div className="card-title-row">
               <h3>Activity & Notes</h3>
             </div>
             <div className="note-input-container">
-              <textarea 
-                className="note-textarea" 
-                placeholder="Add a note..." 
+              <textarea
+                className="note-textarea"
+                placeholder="Add a note..."
                 value={note}
                 onChange={e => setNote(e.target.value)}
               ></textarea>
@@ -3337,8 +3433,8 @@ const NotificationsView = ({ activity, onMarkAllRead, onDelete }) => {
               </div>
             </div>
             <div className="notif-actions">
-              <button 
-                className="btn-icon-only" 
+              <button
+                className="btn-icon-only"
                 title="Delete Notification"
                 onClick={() => onDelete(n._id)}
               >
@@ -3391,21 +3487,21 @@ const LoginPage = ({ onLogin, onSwitchToSignup }) => {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-field">
             <label>Email Address</label>
-            <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="email@example.com" />
+            <input type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="email@example.com" />
           </div>
           <div className="form-field">
             <label>Password</label>
             <div className="password-input-wrapper">
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                required 
-                value={formData.password} 
-                onChange={e => setFormData({...formData, password: e.target.value})} 
-                placeholder="••••••••" 
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={formData.password}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+                placeholder="••••••••"
               />
-              <button 
-                type="button" 
-                className="eye-button" 
+              <button
+                type="button"
+                className="eye-button"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -3461,30 +3557,30 @@ const SignupPage = ({ onSignup, onSwitchToLogin }) => {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-field">
             <label>Full Name</label>
-            <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="John Doe" />
+            <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" />
           </div>
           <div className="form-field">
             <label>Workspace / Company Name</label>
-            <input type="text" required value={formData.workspaceName} onChange={e => setFormData({...formData, workspaceName: e.target.value})} placeholder="Acme Inc." />
+            <input type="text" required value={formData.workspaceName} onChange={e => setFormData({ ...formData, workspaceName: e.target.value })} placeholder="Acme Inc." />
           </div>
           <div className="form-field">
             <label>Email Address</label>
-            <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="email@example.com" />
+            <input type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="email@example.com" />
           </div>
           <div className="form-field">
             <label>Password (min. 8 chars)</label>
             <div className="password-input-wrapper">
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                required 
-                minLength="8" 
-                value={formData.password} 
-                onChange={e => setFormData({...formData, password: e.target.value})} 
-                placeholder="••••••••" 
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                minLength="8"
+                value={formData.password}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+                placeholder="••••••••"
               />
-              <button 
-                type="button" 
-                className="eye-button" 
+              <button
+                type="button"
+                className="eye-button"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
