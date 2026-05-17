@@ -561,7 +561,7 @@ app.get('/api/stats', auth, async (req, res) => {
       'Sample / Price Sent': 0, 'Order Confirmed': 0, 
       'Delivery Scheduled': 0, 'Delivered': 0, 
       'Payment Pending': 0, 'Payment Received': 0, 
-      'Active Customer / Repeat Order': 0, 'Lost Lead': 0
+      'Active Customer / Repeat Order': 0, 'Completed': 0, 'Lost Lead': 0
     };
 
     let totalLeads = 0;
@@ -579,6 +579,7 @@ app.get('/api/stats', auth, async (req, res) => {
       contactedLeads: pipeline['Contacted'],
       visits: visitsCount,
       samplesSent,
+      completedLeads: pipeline['Completed'] || 0,
       lostLeads: pipeline['Lost Lead'],
       pipeline
     });

@@ -675,6 +675,15 @@ const DashboardView = ({ stats, leads, activityList, onNavigate, onLeadClick }) 
       </div>
       <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
         <div className="stat-header">
+          <span className="stat-label">Completed</span>
+          <div className="stat-icon-box"><Check size={16} /></div>
+        </div>
+        <div className="stat-value">{stats?.completedLeads || 0}</div>
+        <div className="stat-subtext">Leads completed</div>
+        <div className="stat-link">View <ArrowRight size={12} /></div>
+      </div>
+      <div className="stat-card clickable" onClick={() => onNavigate('Opportunities')}>
+        <div className="stat-header">
           <span className="stat-label">Lost</span>
           <div className="stat-icon-box"><X size={16} /></div>
         </div>
@@ -732,7 +741,7 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
-  const allStatuses = ['All', 'New', 'Contacted', 'Visits', 'Samples', 'Lost'];
+  const allStatuses = ['All', 'New', 'Contacted', 'Visits', 'Samples', 'Completed', 'Lost'];
 
   // Apply all filters
   const filteredLeads = leads.filter(lead => {
@@ -751,6 +760,7 @@ const OpportunitiesView = ({ leads, onAdd, onImport, viewMode, setViewMode, onLe
       if (statusFilter === 'Contacted' && lead.status !== 'Contacted') return false;
       if (statusFilter === 'Visits' && lead.contactMethod !== 'Visit') return false;
       if (statusFilter === 'Samples' && lead.status !== 'Sample / Price Sent') return false;
+      if (statusFilter === 'Completed' && lead.status !== 'Completed') return false;
       if (statusFilter === 'Lost' && lead.status !== 'Lost Lead') return false;
     }
     // User filter
@@ -2375,7 +2385,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
   const statuses = [
     'New Lead', 'Contacted', 'Qualified Lead', 'Sample / Price Sent', 
     'Order Confirmed', 'Delivery Scheduled', 'Delivered', 'Payment Pending', 
-    'Payment Received', 'Active Customer / Repeat Order', 'Lost Lead'
+    'Payment Received', 'Active Customer / Repeat Order', 'Completed', 'Lost Lead'
   ];
 
   const [note, setNote] = useState('');
@@ -2475,7 +2485,14 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
           nextStatus = 'Lost Lead';
         } else if (workflowForm.response === 'Interested') {
           if (currentIdx < 2) nextStatus = 'Qualified Lead';
-          if ((workflowForm.priceListSent === 'Yes' || workflowForm.sampleDelivered === 'Yes') && currentIdx < 3) {
+          if (workflowForm.requiredNextStep === 'Send Price List') {
+            nextStatus = 'Completed';
+          } else if (
+            (workflowForm.priceListSent === 'Yes' || 
+             workflowForm.sampleDelivered === 'Yes' || 
+             workflowForm.requiredNextStep === 'Send Samples') && 
+            currentIdx < 3
+          ) {
             nextStatus = 'Sample / Price Sent';
           }
         }

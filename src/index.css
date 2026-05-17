@@ -818,6 +818,7 @@
 .status-badge-paymentpending { background: #fef2f2; color: #dc2626; border-color: #fee2e2; }
 .status-badge-paymentreceived { background: #f0fdf4; color: #166534; border-color: #dcfce7; }
 .status-badge-activecustomerrepeatorder { background: #2563eb; color: white; border-color: #1d4ed8; }
+.status-badge-completed { background: #e6fffa; color: #0d9488; border-color: #99f6e4; }
 .status-badge-lostlead { background: #1f2937; color: white; border-color: #111827; }
 
 /* Lead Stepper */
@@ -2129,7 +2130,7 @@
 }
 
 /* Dashboard Components */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
 .stat-card { 
   background: var(--card-bg); /* Depth Foundation */
   padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); 
