@@ -1631,9 +1631,9 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
     'Hotel', 'Catering Company', 'Gym / Sports Club', 'Other'
   ];
 
-  const leadSources = ['Website', 'Cold Call', 'Sales Visit', 'Referral', 'Social Media', 'Other'];
+  const leadSources = ['Website', 'Cold Call', 'Sales Visit', 'Referral', 'Social Media', 'Personal Friend', 'Enquiry', 'Other'];
 
-  const products = ['COLA', 'STRAWBERRY', 'ORANGE', 'MANGO', 'COLA ZERO'];
+  const products = ['ALL', 'COLA', 'STRAWBERRY', 'ORANGE', 'MANGO', 'COLA ZERO'];
 
   const validate = () => {
     const newErrors = {};
@@ -1698,12 +1698,35 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
   };
 
   const toggleProduct = (product) => {
-    setFormData(prev => ({
-      ...prev,
-      interestedProducts: prev.interestedProducts.includes(product)
-        ? prev.interestedProducts.filter(p => p !== product)
-        : [...prev.interestedProducts, product]
-    }));
+    setFormData(prev => {
+      let nextProducts;
+      if (product === 'ALL') {
+        const allSelected = prev.interestedProducts.includes('ALL');
+        nextProducts = allSelected ? [] : ['ALL', 'COLA', 'STRAWBERRY', 'ORANGE', 'MANGO', 'COLA ZERO'];
+      } else {
+        const isCurrentlySelected = prev.interestedProducts.includes(product);
+        let updated;
+        if (isCurrentlySelected) {
+          updated = prev.interestedProducts.filter(p => p !== product && p !== 'ALL');
+        } else {
+          updated = [...prev.interestedProducts, product];
+        }
+        
+        // Check if all actual products are now selected
+        const actualProducts = ['COLA', 'STRAWBERRY', 'ORANGE', 'MANGO', 'COLA ZERO'];
+        const hasAllActual = actualProducts.every(ap => updated.includes(ap));
+        
+        if (hasAllActual) {
+          nextProducts = ['ALL', ...updated.filter(p => p !== 'ALL')];
+        } else {
+          nextProducts = updated.filter(p => p !== 'ALL');
+        }
+      }
+      return {
+        ...prev,
+        interestedProducts: nextProducts
+      };
+    });
   };
 
   return (
