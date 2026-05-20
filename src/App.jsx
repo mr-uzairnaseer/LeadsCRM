@@ -1640,6 +1640,7 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
     leadOwner: '',
     interestedProducts: [],
     leadSource: '',
+    supplier: '',
     notes: ''
   });
   const [errors, setErrors] = useState({});
@@ -1864,6 +1865,15 @@ const AddOpportunityModal = ({ onClose, onSuccess, authHeaders, users = [] }) =>
                 <option value="">Select Source</option>
                 {leadSources.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
+            </div>
+            <div className="form-field">
+              <label>Current Supplier</label>
+              <input
+                type="text"
+                placeholder="e.g. Red Bull, Lucozade..."
+                value={formData.supplier}
+                onChange={e => setFormData({ ...formData, supplier: e.target.value })}
+              />
             </div>
             <div className="form-field full-width">
               <label>Notes</label>
@@ -2313,6 +2323,7 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
               ? item.interested_products.split(/[;,]/).map(p => p.trim().toUpperCase()).filter(Boolean)
               : [],
             leadSource: item.lead_source || item.leadsource || '',
+            supplier: item.supplier || item.current_supplier || '',
             status: type === 'accounts' ? (item.status || 'Active Customer / Repeat Order') : 'New Lead',
             notes: item.notes || '',
             topCompetitorBrandName: item.top_competitor_brand_name || item.topcompetitorbrandname || item.current_provider || item.provider || ''
@@ -2320,6 +2331,7 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
 
           // Basic validation for required fields
           if (type !== 'users' && (!payload.companyName || !payload.phoneWhatsApp)) {
+            console.warn('Skipping row — missing companyName or phoneWhatsApp:', item);
             failCount++;
             continue;
           }
@@ -2349,7 +2361,15 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
         });
 
         if (successCount === 0 && data.length > 0) {
-          throw new Error('Failed to import any records. Please check your CSV format.');
+          throw new Error(
+            `Failed to import any records. Check:\n\u2022 Required columns: company_name, phone_whatsapp, city_area\n\u2022 No duplicate company names or phone numbers\n\u2022 Valid business_type value`
+          );
+        }
+
+        if (failCount > 0) {
+          setError(`Imported ${successCount} of ${data.length} records. ${failCount} row(s) failed \u2014 likely duplicates or missing required fields.`);
+          onSuccess();
+          return; // Keep modal open so user sees the warning
         }
 
         onSuccess();
@@ -2479,6 +2499,7 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
     cityArea: lead?.cityArea || '',
     postcode: lead?.postcode || '',
     businessType: lead?.businessType || '',
+    supplier: lead?.supplier || '',
     leadOwner: lead?.leadOwner?._id || lead?.leadOwner || ''
   });
   const [contactErrors, setContactErrors] = useState({});
@@ -3039,6 +3060,19 @@ const LeadDetailsView = ({ lead, onBack, onSuccess, onDelete, onNavigateToOpport
                   </select>
                 ) : (
                   <span>Assigned to: {lead.leadOwner?.name || 'Self'}</span>
+                )}
+              </div>
+              <div className="contact-info-item">
+                <Building size={18} />
+                {isEditingContact ? (
+                  <input
+                    type="text"
+                    placeholder="Current Supplier (e.g. Red Bull)"
+                    value={contactForm.supplier}
+                    onChange={e => setContactForm({ ...contactForm, supplier: e.target.value })}
+                  />
+                ) : (
+                  <span>Supplier: {lead.supplier || '—'}</span>
                 )}
               </div>
             </div>

@@ -19,6 +19,7 @@ const leadSchema = new mongoose.Schema({
   postcode: { type: String },
   interestedProducts: [{ type: String }],
   leadOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  supplier: { type: String },
   notes: { type: String },
   leadSource: { type: String },
   status: {
