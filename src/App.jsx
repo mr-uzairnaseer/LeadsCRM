@@ -137,6 +137,11 @@ function App() {
         fetch('/api/stats', { headers: authHeaders })
       ]);
 
+      // If the backend isn't ready yet (503) signal the caller to retry
+      if (!leadsRes.ok && leadsRes.status === 503) {
+        throw Object.assign(new Error('backend_starting'), { retryable: true });
+      }
+
       const [leadsData, usersData, activityData, statsData] = await Promise.all([
         leadsRes.json(), usersRes.json(), activityRes.json(), statsRes.json()
       ]);
@@ -154,9 +159,12 @@ function App() {
       }
 
       setLoading(false);
+      return true; // success
     } catch (e) {
+      if (e.retryable) return false; // signal retry needed
       console.error('Error fetching data:', e);
       setLoading(false);
+      return true; // non-retryable error, stop retrying
     }
   };
 
@@ -199,13 +207,29 @@ function App() {
 
   // ─── Initial Load & Background Sync ─────────────────────────────────
   React.useEffect(() => {
-    if (token) {
-      fetchData();
-      // Background sync every 60s — just keeps things fresh,
-      // mutations update state immediately via optimistic updates
-      const interval = setInterval(fetchData, 60000);
-      return () => clearInterval(interval);
-    }
+    if (!token) return;
+
+    // Retry on startup race condition (backend slow to boot)
+    let cancelled = false;
+    const loadWithRetry = async () => {
+      const MAX_RETRIES = 8;
+      const RETRY_DELAY_MS = 2000;
+      for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+        if (cancelled) return;
+        const done = await fetchData();
+        if (done) break;
+        // Backend not ready yet — wait before next attempt
+        await new Promise(r => setTimeout(r, RETRY_DELAY_MS));
+      }
+    };
+
+    loadWithRetry();
+    // Background sync every 60s — keeps data fresh between user actions
+    const interval = setInterval(fetchData, 60000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [token]);
 
   React.useEffect(() => {
