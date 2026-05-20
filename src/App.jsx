@@ -2278,16 +2278,20 @@ const ImportLeadsModal = ({ onClose, type, onSuccess, authHeaders }) => {
             phone: item.phone || '',
             password: item.password || 'password123'
           } : {
-            companyName: item.business_name || item.business || item.companyname || item.company_name,
-            contactPerson: item.contact_name || item.contact || item.contactperson || item.contact_person,
-            phoneWhatsApp: item.contact_phone || item.phone || item.phonewhatsapp || item.phone_whatsapp,
-            email: item.contact_email || item.email,
-            postcode: item.postcode,
-            cityArea: item.town_city || item.cityarea || item.area || 'Unknown',
-            businessType: mapIndustryToBusinessType(item.industry || item.businesstype || item.business_type),
+            companyName: item.company_name || item.companyname || item.company_shop_name || item.business_name || item.business || '',
+            businessType: mapIndustryToBusinessType(item.business_type || item.businesstype || item.industry || ''),
+            contactPerson: item.contact_person || item.contactperson || item.contact_name || item.contact || '',
+            phoneWhatsApp: item.phone_whatsapp || item.phonewhatsapp || item.contact_phone || item.phone || '',
+            email: item.email || item.contact_email || '',
+            cityArea: item.city_area || item.cityarea || item.town_city || item.area || 'Unknown',
+            postcode: item.postcode || '',
+            interestedProducts: item.interested_products
+              ? item.interested_products.split(/[;,]/).map(p => p.trim().toUpperCase()).filter(Boolean)
+              : [],
+            leadSource: item.lead_source || item.leadsource || '',
             status: type === 'accounts' ? (item.status || 'Active Customer / Repeat Order') : 'New Lead',
             notes: item.notes || '',
-            topCompetitorBrandName: item.current_provider || item.provider || item.topcompetitorbrandname || ''
+            topCompetitorBrandName: item.top_competitor_brand_name || item.topcompetitorbrandname || item.current_provider || item.provider || ''
           };
 
           // Basic validation for required fields

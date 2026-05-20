@@ -1,2 +1,2 @@
-business_name,contact_name,contact_email,contact_phone,address,town_city,postcode,industry,current_provider,rates,time_left_in_contract,estimated_volume,notes
-Acme Corp,Jane Smith,jane@acme.com,555-0100,123 High Street,London,SW1A 1AA,Retail,WorldPay,1.5%,6 months,50000,Hot lead
+company_name,business_type,contact_person,phone_whatsapp,email,city_area,postcode,interested_products,lead_source,notes
+Acme Corp,Retail Shop,Jane Smith,07123456789,jane@acme.com,London,SW1A 1AA,COLA;STRAWBERRY,Website,Looking for premium soft drinks
